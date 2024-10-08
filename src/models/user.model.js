@@ -6,15 +6,16 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: {
+  password_user: {
     type: String,
     required: true,
   },
-  email: {
+  email_user: {
     type: String,
     required: true,
+    unique: true,
   },
-  // Añade otros campos que necesites, como permisos o roles
 });
+
 
 module.exports = mongoose.model('User', userSchema);

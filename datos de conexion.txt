@@ -1,0 +1,8 @@
+
+
+npm install mongodb
+
+mongodb+srv://padallain2000:S4JkyIFzfmgBrIq6@clusternote.0twnr.mongodb.net/?retryWrites=true&w=majority&appName=clusterNote
+
+
+7gnah-y.5ZPpAG.

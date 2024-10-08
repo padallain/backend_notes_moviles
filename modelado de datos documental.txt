@@ -1,0 +1,65 @@
+note{
+id:...
+title : string,
+description : string,
+favorite : bool,
+priority : number,
+day: date
+user : id
+}
+
+
+category{
+id:...,
+title : string,
+note: []
+id : ...
+
+}
+
+
+user{
+id:...,
+name : string,
+lastname : sting,
+email : string,
+password : string
+}
+
+
+{
+  "title": "Estudiar para examen",
+  "description": "Estudiar �lgebra y geometr�a",
+  "favorite": true,
+  "priority": 2,
+  "day": "2024-09-24",
+  "user": {
+    "id": "userId123",
+    "name": "Juan",
+    "lastname": "P�rez"
+  },
+  "category": {
+    "id": "catId123",
+    "title": "Estudio"
+  }
+}
+
+{
+  "title": "Estudiar para examen",
+  "description": "Estudiar �lgebra y geometr�a",
+  "favorite": true,
+  "priority": 2,
+  "day": "2024-09-24",
+  "user": "userId123", 
+  "category": "catId123"
+}
+
+user:12345 {
+  nombre: "Juan",
+  notas: {
+    nota1: { "title": "Estudiar para examen", "priority": 2 },
+    nota2: { "title": "Ir al gimnasio", "priority": 3 }
+  }
+}
+
+
