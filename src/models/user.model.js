@@ -15,7 +15,14 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  token: {
+    type: String, 
+  },
+  resetTokenExpires: {
+    type: Date, 
+  },
 });
 
+// El método pre-guardado, si es necesario, para generar el token puede añadirse aquí
 
 module.exports = mongoose.model('User', userSchema);
