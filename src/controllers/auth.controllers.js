@@ -3,13 +3,13 @@ const User = require("../models/user.model");
 const jwt = require('jsonwebtoken'); 
 const nodemailer = require("nodemailer");
 const crypto = require('crypto');
+const { time } = require("console");
 
 
 
 const register = async (req, res) => {
   const { email_user, password, username } = req.body;
-  console.log(email_user, password, username);
-  console.log(req.body);
+  console.log(req.body)
 
   try {
     // Verificar que los campos requeridos estén presentes
@@ -18,22 +18,14 @@ const register = async (req, res) => {
     }
 
     // Verificar si el usuario o el correo ya existen en la base de datos
-    const existingEmail = await User.findOne({
-      $or: [{ email_user }]
-    });
-
+    const existingEmail = await User.findOne({ email_user });
     if (existingEmail) {
-      // Si el usuario o el correo ya existen, no permitir el registro
       return res.status(400).json({ message: 'Email or username already exists' });
     }
 
-    const existingUser = await User.findOne({
-      $or: [{ username }]
-    });
-
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
-      // Si el usuario o el correo ya existen, no permitir el registro
-      return res.status(400).json({ message: ' Username already exists' });
+      return res.status(400).json({ message: 'Username already exists' });
     }
 
     // Generar un "salt" para la contraseña
@@ -44,7 +36,8 @@ const register = async (req, res) => {
     const newUser = new User({
       username,
       email_user,
-      password_user: hashedPassword, // Guardar la contraseña encriptada
+      password_user: hashedPassword,
+      // token y resetTokenExpires serán null o undefined por defecto
     });
 
     // Guardar el usuario en la base de datos
@@ -56,7 +49,6 @@ const register = async (req, res) => {
     res.status(500).json({ message: 'Error registering user' });
   }
 };
-
 
 
 const createLogin = async (req, res) => {
@@ -92,7 +84,6 @@ const createLogin = async (req, res) => {
           .json({
             success: true,
             message: "Login successful",
-            permissions,
             personId,
           });
         return;
@@ -116,6 +107,8 @@ const createLogin = async (req, res) => {
   }
 };
 
+
+
 console.log("mi rey")
 
 userGmail = "padallain2000@gmail.com"
@@ -132,50 +125,93 @@ const transporter = nodemailer.createTransport({
 });
 
 const resetPassword = async (req, res) => {
-    const { email_user } = req.body;
-    console.log(email_user)
+  const { email_user } = req.body;
 
-    if (!email_user) {
-      return res.status(400).json({ message: 'El correo electrónico es obligatorio.' });
+  // Verificar si el correo fue proporcionado
+  if (!email_user) {
+    return res.status(400).json({ message: 'El correo electrónico es obligatorio.' });
+  }
+
+  try {
+    // Buscar al usuario por su correo electrónico
+    const user = await User.findOne({ email_user });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
     }
 
-    try {
-      const user = await User.findOne({ email_user });
+    // Generar un código aleatorio de 6 dígitos
+    const resetCode = crypto.randomInt(100000, 999999).toString();
 
-      if (!user) {
-        return res.status(404).json({ message: 'Usuario no encontrado.' });
+    // Establecer el tiempo de expiración a 10 minutos desde ahora
+    const expiresIn = new Date();
+    expiresIn.setMinutes(expiresIn.getMinutes() + 10);
+
+    // Guardar el código de restablecimiento en el campo "token" y la expiración en "resetTokenExpires"
+    user.token = resetCode;
+    user.resetTokenExpires = expiresIn;
+
+    // Guardar el usuario con el nuevo token y la fecha de expiración
+    await user.save();
+
+    // Configurar las opciones para el correo electrónico
+    const mailOptions = {
+      from: 'tuemail@gmail.com', // Tu correo
+      to: email_user,            // Correo del destinatario
+      subject: 'Restablecimiento de contraseña',
+      text: `Tu código de restablecimiento de contraseña es: ${resetCode}. Este código es válido por 10 minutos.`
+    };
+
+    // Enviar el correo con el token
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error al enviar el correo:', error);
+        return res.status(500).json({ message: 'Error al enviar el correo.' });
+      } else {
+        console.log('Correo enviado: ' + info.response);
+        return res.status(200).json({ message: 'Correo de restablecimiento enviado exitosamente.', resetCode });
       }
+    });
 
-      const resetCode = crypto.randomInt(100000, 999999).toString();
-      user.resetCode = resetCode;
-      await user.save();
+  } catch (err) {
+    console.error('Error en la solicitud de restablecimiento de contraseña:', err);
+    return res.status(500).json({ message: 'Error en la solicitud de restablecimiento de contraseña.' });
+  }
+};
 
-      const mailOptions = {
-        from: 'tuemail@gmail.com',          // Tu correo
-        to: email_user,                          // Correo del destinatario
-        subject: 'Restablecimiento de contraseña',
-        text: `Tu código de restablecimiento de contraseña es: ${resetCode}. Este código es válido por un tiempo limitado.`
-      };
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error al enviar el correo:', error);
-          return res.status(500).json({ message: 'Error al enviar el correo.' });
-        } else {
-          console.log('Correo enviado: ' + info.response);
-          return res.status(200).json({ message: 'Correo de restablecimiento enviado exitosamente.', resetCode });
-        }
-      });
-    } catch (err) {
-      console.error('Error en la solicitud de restablecimiento de contraseña:', err);
-      return res.status(500).json({ message: 'Error en la solicitud de restablecimiento de contraseña.' });
+const checkResetToken = async (req, res) => {
+  const { email_user, resetCode } = req.body;
+  console.log(req.body)
+  console.log(email_user, resetCode)
+
+  try {
+    // Buscar al usuario por su correo electrónico
+    const user = await User.findOne({ email_user });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
     }
+
+    // Verificar si el código es correcto y si no ha expirado
+    if (user.token !== resetCode || new Date() > user.resetTokenExpires) {
+      return res.status(400).json({ message: 'Código inválido o ha expirado.' });
+    }
+
+    // Si todo es correcto, enviar un mensaje de éxito
+    return res.status(200).json({ message: 'El código es válido. Puedes restablecer la contraseña.' });
+
+  } catch (err) {
+    console.error('Error verificando el código:', err);
+    return res.status(500).json({ message: 'Error verificando el código.' });
+  }
 };
 
 
 module.exports = {
   register,
   createLogin,
-  resetPassword
+  resetPassword,
+  checkResetToken
 
 };
