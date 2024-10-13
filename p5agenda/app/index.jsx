@@ -10,7 +10,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Link } from 'expo-router';
 
-
 const duration = 3800;
 const delay1 = 1500;
 const delay2 = 1800;
@@ -31,10 +30,24 @@ export default function Index() {
     const wynmove = useSharedValue(0);
     const rightsmove = useSharedValue(0);
     const loginbook = useSharedValue(0);
+    const loginbook2 = useSharedValue(0);
     const buttonsmove = useSharedValue(0);
+    const registermove = useSharedValue(0);
+    const backbuttonregistermove = useSharedValue(0);
+    const backbuttonforgotmove = useSharedValue(0);
+    const forgotpassmove = useSharedValue(0);
+    const forgotpasstitlemove = useSharedValue(0);
   
-    const [pressableDisabled, setPressableDisabled] = useState(false);
-    const [isRegisterPressableActive, setIsRegisterPressableActive] = useState(false);
+  const [pressableDisabled, setPressableDisabled] = useState(false);
+  const [isRegisterPressableActive, setIsRegisterPressableActive] = useState(false);
+  const [isForgotPassPressableActive, setIsForgotPassPressableActive] = useState(false);
+  const [isLoginButtonPressableActive, setIsLoginButtonPressableActive] = useState(false);
+  const [isRegisterButtonPressableActive, setIsRegisterButtonPressableActive] = useState(false);
+  const [isLoginBack1PressableActive, setIsLoginBack1PressableActive] = useState(false);
+  const [isSendPressableActive, setIsSendPressableActive] = useState(false);
+  const [isVerifyPressableActive, setIsVerifyPressableActive] = useState(false);
+  const [isConfirmPressableActive, setIsConfirmPressableActive] = useState(false);
+  const [isLoginBack2PressableActive, setIsLoginBack2PressableActive] = useState(false);
 
 
   React.useEffect(() => {
@@ -102,16 +115,48 @@ export default function Index() {
       transform: [{ translateX: loginbook.value }],
     };
   });
+  const BookLoginAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: loginbook2.value }],
+    };
+  });
   const ButtonsAnim = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: buttonsmove.value }],
     };
   });
+  const toRegisterAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: registermove.value }],
+    };
+  });
+  const ButtonBackRegisterAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: backbuttonregistermove.value }],
+    };
+  });
+  const toForgotAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: forgotpassmove.value }],
+    };
+  });
+  const toForgotTitleAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: forgotpasstitlemove.value }],
+    };
+  });
+  const ButtonBackForgotAnim = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: backbuttonforgotmove.value }],
+    };
+  });
     
   const handlePress = () => {
-    console.log("Button pressed");
+    console.log("Tap To Begin Pressed");
     setPressableDisabled(true);
     setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
     opacity.value = withTiming(0, { duration: 500 });
     scaleLogo.value = withTiming(0.5, { duration: 1000, easing: Easing.bezier(0.20, -0.5, 0.25, 1) });
     moveLogoY.value = withTiming(-105, { duration: 1000, easing: Easing.bezier(0.5, -0.5, 0.25, 1) });
@@ -120,18 +165,103 @@ export default function Index() {
     stripeMoveX.value = withTiming(-10, { duration: 1000 });
     stripeRotate.value = withTiming(15, { duration: 1000 });
     bgmove.value = withTiming(-70, { duration: 1000 });
-    wynmove.value = withTiming(125, { duration: 1500 });
+    wynmove.value = withTiming(125, { duration: 1700 });
     rightsmove.value = withTiming(-300, { duration: 600 });
     loginbook.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) });
+    loginbook2.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = -400; });
     buttonsmove.value = withTiming(-300, { duration: 1500, easing: Easing.bezier(0.5, -0.5, 0.25, 1) });
   };
 
   const handleRegisterPress = () => {
+    setIsRegisterPressableActive(false);
+    setIsForgotPassPressableActive(false);
+    setIsLoginButtonPressableActive(false);
+    setIsLoginBack1PressableActive(true);
+    setIsRegisterButtonPressableActive(true);
     console.log("Register button pressed");
+    loginbook2.value = withTiming(-800, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = -800; });
+    registermove.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { registermove.value = -400; });
+    buttonsmove.value = withTiming(300, { duration: 1300, easing: Easing.bezier(0.25, -0.25, 0.25, 1) });
+    backbuttonregistermove.value = withTiming(-300, { duration: 1300, easing: Easing.bezier(0.25, -0.25, 0.25, 1) });
+  };
+
+  const handleForgotPassPress = () => {
+    console.log("Forgot Password button pressed");
+    setIsRegisterPressableActive(false);
+    setIsForgotPassPressableActive(false);
+    setIsLoginButtonPressableActive(false);
+    setIsLoginBack2PressableActive(true);
+    setIsSendPressableActive(true);
+    loginbook2.value = withTiming(0, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = 0; });
+    forgotpasstitlemove.value = withTiming(500, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { forgotpassmove.value = 500; });
+    forgotpassmove.value = withTiming(500, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { forgotpassmove.value = 500; });
+    buttonsmove.value = withTiming(300, { duration: 1300, easing: Easing.bezier(0.25, -0.25, 0.25, 1) });
+    backbuttonforgotmove.value = withTiming(-300, { duration: 1300, easing: Easing.bezier(0.25, -0.25, 0.25, 1) });
+  };
+
+  const handleLoginButtonPress = () => {
+    console.log("Login button pressed");
     // Add your navigation or other logic here
   };
 
+  const handleRegisterButtonPress = () => {
+    console.log("Registered button pressed");
+    // Add your navigation or other logic here
+  };
+
+  const handleSendButtonPress = () => {
+    console.log("Send button pressed");
+    setIsSendPressableActive(false);
+    setIsVerifyPressableActive(true);
+    forgotpassmove.value = withTiming(900, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { forgotpassmove.value = 900; });
+    };
+  const handleVerifyButtonPress = () => {
+    console.log("Verify button pressed");
+    setIsVerifyPressableActive(false);
+    setIsConfirmPressableActive(true);
+    forgotpassmove.value = withTiming(1300, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { forgotpassmove.value = 1300; });
+  };
+  const handleConfirmButtonPress = () => {
+    console.log("Confirm button pressed");
+    // Add your navigation or other logic here
+  };
+
+  const BackToLogin1ButtonPress = () => {
+    console.log("Back To Login button pressed");
+    setIsLoginBack1PressableActive(false);
+    setIsRegisterButtonPressableActive(false);
+    setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
+    loginbook2.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = -400; });
+    registermove.value = withTiming(0, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { registermove.value = 0; });
+    buttonsmove.value = withTiming(-300, { duration: 1300, easing: Easing.bezier(0.25, -0.5, 0.25, 1) });
+    backbuttonregistermove.value = withTiming(300, { duration: 1300, easing: Easing.bezier(0.25, -0.25, 0.25, 1) });
+  };
+
+  const BackToLogin2ButtonPress = () => {
+    console.log("Back To Login button pressed");
+    setIsLoginBack2PressableActive(false);
+    setIsSendPressableActive(false);
+    setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
+    loginbook2.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = -400; });
+    forgotpasstitlemove.value = withTiming(0, { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) }, () => { forgotpassmove.value = 0; });    
+    buttonsmove.value = withTiming(-300, { duration: 1000, easing: Easing.bezier(0.25, -0.5, 0.25, 1) });
+    backbuttonforgotmove.value = withTiming(300, { duration: 1000, easing: Easing.bezier(0.25, -0.25, 0.25, 1) });
+    if (setIsSendPressableActive) {
+      forgotpassmove.value = withTiming(0, { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) }, () => { forgotpassmove.value = 0; });
+    } else if (setIsVerifyPressableActive) {
+      forgotpassmove.value = withTiming(400, { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) }, () => { forgotpassmove.value = 400; });
+    } else if (setIsConfirmPressableActive) {
+      forgotpassmove.value = withTiming(800, { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) }, () => { forgotpassmove.value = 800; });
+    }
+
+  };
+
   return (
+    // COMENTADO: PANTALLA DE CARGA
     // <View
     //   style={{
     //     flex: 1,
@@ -147,7 +277,8 @@ export default function Index() {
         flex: 1,
         backgroundColor: "#cc0f1e",
       }}
-    >
+      >
+          {/* IMÁGENES ESTÁTICAS */}
           <Image source={require("../assets/images/Login/PTBGFullRed45.png")} style={styles.ptbg} />
           <Image source={require("../assets/images/Login/Splashes/paint-splatter-10.png")} style={styles.splash0} />
           <Image source={require("../assets/images/Login/Splashes/paint-splatter-1.png")} style={styles.splash1} />
@@ -157,7 +288,7 @@ export default function Index() {
           <Image source={require("../assets/images/Login/Splashes/paint-splatter-17.png")} style={styles.splash5} />
           <Image source={require("../assets/images/Login/Splashes/paint-splatter-17.png")} style={styles.splash6} />
               
-
+          {/* ASSETS DE WELCOME Y LOGIN */}
           <Animated.Image source={require("../assets/images/Login/SplitStripe.png")} style={[styles.splitstripe, SplitStripeAnim]} />
           <Animated.Image source={require("../assets/images/Login/TapToBegin.png")} style={[styles.tap, TapBlinkingOpacity]} />
           <Animated.Image source={require("../assets/images/Logo.png")} style={[styles.logo, LogoAnim]} />
@@ -165,34 +296,229 @@ export default function Index() {
           <Animated.Image source={require("../assets/images/Login/Rights.png")} style={[styles.rights, RightsAnim]} />
           <Animated.Image source={require("../assets/images/Login/WriteYourName.png")} style={[styles.wyn, WriteYourName]} />
           <Animated.Image source={require("../assets/images/Login/FormBookHDPT.png")} style={[styles.book, BookAnim]} />
+          <Animated.Image source={require("../assets/images/Login/LoginTitle.png")} style={[styles.login, BookLoginAnim]} />
+          <Pressable onPress={handleLoginButtonPress} disabled={!isLoginButtonPressableActive} style={styles.loginbuttonpressable}>
           <Animated.Image source={require("../assets/images/Login/Login.png")} style={[styles.loginbutton, ButtonsAnim]} />
-          <Animated.Image source={require("../assets/images/Login/LoginTitle.png")} style={[styles.login, BookAnim]} />
+          </Pressable>
           <Pressable onPress={handleRegisterPress} disabled={!isRegisterPressableActive} style={styles.registerPressable}>
           <Animated.Image source={require("../assets/images/Login/RegisterTitle.png")} style={[styles.register, ButtonsAnim]} />
           </Pressable>
+          <Pressable onPress={handleForgotPassPress} disabled={!isForgotPassPressableActive} style={styles.forgotPressable}>
           <Animated.Image source={require("../assets/images/Login/ForgotPasswordTitle.png")} style={[styles.forgot, ButtonsAnim]} />
-          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit, ButtonsAnim]} />
-          <Animated.Image source={require("../assets/images/Login/Field.png")} style={ [styles.fieldlogin1, BookAnim] } />
-          <Animated.Image source={require("../assets/images/Login/Field.png")} style={ [styles.fieldlogin2, BookAnim] } />
+          </Pressable>
+          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={ [styles.starsplit, ButtonsAnim] } />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={ [styles.fieldlogin1, BookLoginAnim] } />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={ [styles.fieldlogin2, BookLoginAnim] } />
+        
+          {/* ASSETS DE REGISTER */}
+          <Animated.Image source={require("../assets/images/Login/RegisterTitle.png")} style={[styles.registertitle, toRegisterAnim]} />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={ [styles.fieldregister1, toRegisterAnim] } />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={ [styles.fieldregister2, toRegisterAnim] } />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={[styles.fieldregister3, toRegisterAnim]} />
+          <Pressable onPress={handleRegisterButtonPress} disabled={!isRegisterButtonPressableActive} style={styles.registerbuttonPressable}>
+          <Animated.Image source={require("../assets/images/Login/Register.png")} style={[styles.registerbutton, ButtonBackRegisterAnim]} />
+          </Pressable>
+          <Pressable onPress={BackToLogin1ButtonPress} disabled={!isLoginBack1PressableActive} style={styles.backtologin1Pressable}>
+          <Animated.Image source={require("../assets/images/Login/BackToLogin.png")} style={[styles.backtologin1, ButtonBackRegisterAnim]} />
+          </Pressable>
+          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit1, ButtonBackRegisterAnim]} />
+          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit2, ButtonBackRegisterAnim]} />
+
+          {/* ASSETS DE FORGOT PASSWORD */}
+          <Animated.Image source={require("../assets/images/Login/ForgotPasswordTitle.png")} style={[styles.forgottitle, toForgotTitleAnim]} />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={[styles.fieldforgot1, toForgotAnim]} />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={[styles.fieldforgot2, toForgotAnim]} />
+          <Animated.Image source={require("../assets/images/Login/Field.png")} style={[styles.fieldforgot3, toForgotAnim]} />
+          <Pressable onPress={BackToLogin2ButtonPress} disabled={!isLoginBack2PressableActive} style={styles.backtologin2Pressable}>
+          <Animated.Image source={require("../assets/images/Login/BackToLogin.png")} style={[styles.backtologin2, ButtonBackForgotAnim]} />
+          </Pressable>
+          <Pressable onPress={handleSendButtonPress} disabled={!isSendPressableActive} style={styles.sendbuttonPressable}>
+          <Animated.Image source={require("../assets/images/Login/Send.png")} style={[styles.sendbutton, toForgotAnim]} />
+          </Pressable>
+          <Pressable onPress={handleVerifyButtonPress} disabled={!isVerifyPressableActive} style={styles.verifybuttonPressable}>
+          <Animated.Image source={require("../assets/images/Login/Verify.png")} style={[styles.verifybutton, toForgotAnim]} />
+          </Pressable>
+          <Pressable onPress={handleConfirmButtonPress} disabled={!isConfirmPressableActive} style={styles.confirmbuttonPressable}>
+          <Animated.Image source={require("../assets/images/Login/Confirm.png")} style={[styles.confirmbutton, toForgotAnim]} />
+          </Pressable>
+          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit1, ButtonBackForgotAnim]} />
+          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit2, ButtonBackForgotAnim]} />
+
         </View>
       </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  sendbutton: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: -400,
+    bottom: 105,
+  },
+  sendbuttonPressable: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: 0,
+    bottom: 0,
+  },
+  verifybutton: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: -800,
+    bottom: 105,
+  },
+  verifybuttonPressable: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: 0,
+    bottom: 0,
+  },
+  confirmbutton: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: -1200,
+    bottom: 105,
+  },
+  confirmbuttonPressable: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: 0,
+    bottom: 0,
+  },
+  backtologin2: {
+    position: "absolute",
+    width: 130,
+    height: 70,
+    left: 130,
+    bottom: -280,
+  },
+  backtologin2Pressable: {
+    position: "absolute",
+    width: 130,
+    height: 70,
+    left: 0,
+    bottom: 0,
+    transform: [{ rotate: "2deg" }],
+  },
+  fieldforgot1: {
+    position: "absolute",
+    width: 250,
+    height: 55,
+    left: -435,
+    bottom: 240,
+  },
+  fieldforgot2: {
+    position: "absolute",
+    width: 250,
+    height: 55,
+    left: -835,
+    bottom: 240,
+  },
+  fieldforgot3: {
+    position: "absolute",
+    width: 250,
+    height: 55,
+    left: -1235,
+    bottom: 240,
+  },
+  forgottitle: {
+    position: "absolute",
+    width: 190,
+    height: 90,
+    left: -410,
+    bottom: 380,
+  },
+  registerbutton: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: 105,
+    bottom: -200,
+  },
+  registerbuttonPressable: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: 0,
+    bottom: 0,
+  },
+  backtologin1: {
+    position: "absolute",
+    width: 130,
+    height: 70,
+    left: 130,
+    bottom: -280,
+  },
+  backtologin1Pressable: {
+    position: "absolute",
+    width: 130,
+    height: 70,
+    left: 0,
+    bottom: 0,
+    transform: [{ rotate: "2deg" }],
+  },
+  starsplit1: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    left: 50,
+    bottom: -280,
+  },
+  starsplit2: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    right: 50,
+    bottom: -280,
+  },
+  registertitle: {
+    position: "absolute",
+    width: 160,
+    height: 60,
+    left: 505,
+    bottom: 415,
+  },
+  fieldregister1: {
+    position: "absolute",
+    width: 250,
+    height: 55,
+    left: 465,
+    bottom: 330,
+  },
+  fieldregister2: {
+    position: "absolute",
+    width: 250,
+    height: 55,
+    left: 465,
+    bottom: 260,
+  },
+  fieldregister3: {
+    position: "absolute",
+    width: 250,
+    height: 55,
+    left: 465,
+    bottom: 190,
+  },
   fieldlogin1: {
     position: "absolute",
     width: 250,
     height: 55,
     left: 465,
-    bottom: 305,
+    bottom: 300,
   },
   fieldlogin2: {
     position: "absolute",
     width: 250,
     height: 55,
     left: 465,
-    bottom: 215,
+    bottom: 220,
   },
   book: {
     position: "absolute",
@@ -203,9 +529,9 @@ const styles = StyleSheet.create({
   },
   login: {
     position: "absolute",
-    width: 140,
-    height: 60,
-    left: 512,
+    width: 150,
+    height: 65,
+    left: 508,
     bottom: 410,
   },
   loginbutton: {
@@ -214,6 +540,13 @@ const styles = StyleSheet.create({
     height: 70,
     left: 105,
     bottom: -200,
+  },
+  loginbuttonpressable: {
+    position: "absolute",
+    width: 160,
+    height: 70,
+    left: 0,
+    bottom: 0,
   },
   register: {
     position: "absolute",
@@ -238,7 +571,15 @@ const styles = StyleSheet.create({
     height: 70,
     left: 15,
     bottom: -282,
+  },
+  forgotPressable: {
+    position: "absolute",
+    width: 150,
+    height: 70,
+    left: 0,
+    bottom: 0,
     transform: [{ rotate: "-7deg" }],
+    zIndex: 1,
   },
   starsplit: {
     position: "absolute",
