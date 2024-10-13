@@ -168,7 +168,7 @@ export default function Index() {
     wynmove.value = withTiming(125, { duration: 1700 });
     rightsmove.value = withTiming(-300, { duration: 600 });
     loginbook.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) });
-    loginbook2.value = withTiming(-400, { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = -400; });
+    loginbook2.value = withTiming(-400, { duration: 1350, easing: Easing.bezier(0.5, -0.5, 0.25, 1) }, () => { loginbook2.value = -400; });
     buttonsmove.value = withTiming(-300, { duration: 1500, easing: Easing.bezier(0.5, -0.5, 0.25, 1) });
   };
 
