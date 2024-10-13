@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,18 +8,10 @@ import Animated, {
   withTiming,
   withDelay,
 } from 'react-native-reanimated';
-import * as SplashScreen from 'expo-splash-screen';
 import { Link } from 'expo-router';
-
-const duration = 3700;
-const delay1 = 1100;
-const delay2 = 1500;
-const easing = Easing.bezier(0.10, -0.5, 0.25, 1);
 
 export default function Index() {
 
-    const sv1 = useSharedValue(0);
-    const sv2 = useSharedValue(0);
     const opacity = useSharedValue(1);
     const scaleLogo = useSharedValue(1);
     const moveLogoX = useSharedValue(0);
@@ -51,25 +43,9 @@ export default function Index() {
   const [isLoginBack2PressableActive, setIsLoginBack2PressableActive] = useState(false);
 
 
-  React.useEffect(() => {
-      sv1.value = withDelay(delay1, withRepeat(withTiming(1, { duration, easing }), -1));
-      sv2.value = withDelay(delay2, withRepeat(withTiming(1, { duration, easing }), -1));
-      opacity.value = withRepeat(withTiming(0, { duration: 1500, easing: Easing.linear }), -1, true);
+  useEffect(() => {
+    opacity.value = withRepeat(withTiming(0, { duration: 1500, easing: Easing.linear }), -1, true);
   }, []);
-
-  const LoadFlip1 = useAnimatedStyle(() => {
-    const flip = sv1.value * 360;
-    return {
-      transform: [{ rotateY: `${flip}deg` }],
-    };
-  });
-
-  const LoadFlip2 = useAnimatedStyle(() => {
-    const flip = sv2.value * 360;
-    return {
-      transform: [{ rotateY: `${flip}deg` }],
-    };
-  });
     
   const TapBlinkingOpacity = useAnimatedStyle(() => {
     return {
@@ -258,22 +234,11 @@ export default function Index() {
     } else if (setIsConfirmPressableActive) {
       forgotpassmove.value = withTiming(800, { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) }, () => { forgotpassmove.value = 800; });
     }
-
   };
 
   return (
-    // <View
-    //   style={{
-    //     flex: 1,
-    //     backgroundColor: "#080808",
-    //   }}
-    // >
-    //    <Image source={require("../assets/images/Loading/LoadingBG.png")} style={{position: "absolute", width: "100%", height: "100%"}} />      
-    //    <Animated.Image source={require("../assets/images/Loading/JokerShade.png")} style={[styles.Loading1, LoadFlip1]} />
-    //    <Animated.Image source={require("../assets/images/Loading/TakeYourTimeShade.png")} style={[styles.Loading2, LoadFlip2]} />
-    //     </View>
     <Pressable onPress={handlePress} disabled={pressableDisabled} style={{flex: 1}}>
-    <View
+      <View
       style={{
         flex: 1,
         backgroundColor: "#cc0f1e",
@@ -352,6 +317,11 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  loadview: {
+    width: "100%",
+    height: "100%",
+    zIndex: 3,
+  },
   sendbutton: {
     position: "absolute",
     width: 160,
@@ -708,18 +678,4 @@ const styles = StyleSheet.create({
         left: 12,
         bottom: 15,
     },
-    Loading1: {
-    position: "absolute",
-    width: 180,
-    height: 180,
-    right: 10,
-    bottom: 60,
-  },
-  Loading2: {
-    position: "absolute",
-    width: 160,
-    height: 80,
-    right: 15,
-    bottom: -5,
-  },
 });
