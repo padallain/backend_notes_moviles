@@ -38,7 +38,6 @@ export default function Index() {
   const forgotpasstitlemove = useSharedValue(0);
   const inputPosition = useSharedValue(-300); // Inicialmente fuera de la pantalla a la izquierda
 
-
   const [pressableDisabled, setPressableDisabled] = useState(false);
   const [isRegisterPressableActive, setIsRegisterPressableActive] =
     useState(false);
@@ -155,7 +154,6 @@ export default function Index() {
       opacity: inputAnimation.value,
     };
   });
-  
 
   const handlePress = () => {
     console.log("Tap To Begin Pressed");
@@ -272,9 +270,36 @@ export default function Index() {
     });
   };
 
-  const handleLoginButtonPress = () => {
+  const handleLoginButtonPress = async () => {
     console.log("Login button pressed");
-    // Add your navigation or other logic here
+
+    // Datos de inicio de sesión (capturados de los inputs)
+    const loginData = {
+      email_user: username, // Asumiendo que `username` es el valor capturado del input
+      password: password, // Asumiendo que `password` es el valor capturado del input
+    };
+
+    console.log(loginData);
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Response Error:", data.message);
+        // Manejo de errores
+      } else {
+        // Manejo del éxito
+      }
+    } catch (error) {
+      console.error("Error en la petición:", error);
+    }
   };
 
   const handleRegisterButtonPress = () => {
@@ -394,7 +419,6 @@ export default function Index() {
       );
     }
   };
-
 
   return (
     <Pressable
@@ -527,7 +551,7 @@ export default function Index() {
           />
         </Animated.View>
 
-        <Animated.View style={[styles.input2, BookLoginAnim]}>
+        <Animated.View style={[styles.input2]}>
           <TextInput
             placeholder="Enter Password"
             placeholderTextColor="#888"
@@ -823,33 +847,33 @@ const styles = StyleSheet.create({
   input1: {
     width: 250,
     height: 20,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     left: 510,
     bottom: 340,
     transform: [{ translateX: -125 }, { translateY: -10 }],
     borderWidth: 0,
     paddingHorizontal: 10,
-    color: 'black', // Color del texto para que sea legible
+    color: "black", // Color del texto para que sea legible
     zIndex: 10,
-    position: 'absolute', // Asegúrate de que esté en posición absoluta
-    backgroundColor: 'transparent', // Fondo transparente
-},
-input2: {
-  width: 250,
-  height: 20,
-  borderColor: '#ccc',
-  left: 600,
-  bottom: 220,
-  top: '67%',
-  left: '60%',
-  transform: [{ translateX: -125 }, { translateY: -10 }],
-  borderWidth: 0,
-  paddingHorizontal: 10,
-  color: 'black', // Color del texto para que sea legible
-  zIndex: 10,
-  position: 'absolute', // Asegúrate de que esté en posición absoluta
-  backgroundColor: 'transparent', // Fondo transparente
-},
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
+  input2: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: 600,
+    bottom: 220,
+    top: "67%",
+    left: "60%",
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
 
   fieldregister3: {
     position: "absolute",
