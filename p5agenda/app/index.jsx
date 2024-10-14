@@ -58,6 +58,7 @@ export default function Index() {
   const [inputOpacity, setInputOpacity] = useState(0); // Inicialmente invisibles
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   // Crear una animación de opacidad
   const inputAnimation = useSharedValue(0);
 
@@ -541,7 +542,7 @@ export default function Index() {
           source={require("../assets/images/Login/Field.png")}
           style={[styles.fieldlogin2, BookLoginAnim]}
         />
-        <Animated.View style={[styles.input1, BookLoginAnim]}>
+        <Animated.View style={[styles.input1Login, BookLoginAnim]}>
           <TextInput
             placeholder="Enter Username"
             placeholderTextColor="#888"
@@ -551,7 +552,7 @@ export default function Index() {
           />
         </Animated.View>
 
-        <Animated.View style={[styles.input2]}>
+        <Animated.View style={[styles.input2Login, BookLoginAnim]}>
           <TextInput
             placeholder="Enter Password"
             placeholderTextColor="#888"
@@ -579,6 +580,38 @@ export default function Index() {
           source={require("../assets/images/Login/Field.png")}
           style={[styles.fieldregister3, toRegisterAnim]}
         />
+         <Animated.View style={[styles.input1Register, toRegisterAnim]}>
+          <TextInput
+            placeholder="Enter Username"
+            placeholderTextColor="#888"
+            value={username}
+            onChangeText={setUsername}
+            style={styles.input2}
+          />
+        </Animated.View>
+
+        <Animated.View style={[styles.input2Register, toRegisterAnim]}>
+          <TextInput
+            placeholder="Enter your email"
+            placeholderTextColor="#888"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input2}
+          />
+        </Animated.View>
+
+        <Animated.View style={[styles.input3Register, toRegisterAnim]}>
+          <TextInput
+            placeholder="Enter Password"
+            placeholderTextColor="#888"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input2}
+          />
+        </Animated.View>
+
         <Pressable
           onPress={handleRegisterButtonPress}
           disabled={!isRegisterButtonPressableActive}
@@ -617,6 +650,17 @@ export default function Index() {
           source={require("../assets/images/Login/Field.png")}
           style={[styles.fieldforgot1, toForgotAnim]}
         />
+       <Animated.View style={[styles.input1Forgot, toForgotAnim]}>
+          <TextInput
+            placeholder="Enter your email"
+            placeholderTextColor="#888"
+            secureTextEntry
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input2}
+          />
+        </Animated.View>
+
         <Animated.Image
           source={require("../assets/images/Login/Field.png")}
           style={[styles.fieldforgot2, toForgotAnim]}
@@ -844,7 +888,7 @@ const styles = StyleSheet.create({
     left: 465,
     bottom: 260,
   },
-  input1: {
+  input1Login: {
     width: 250,
     height: 20,
     borderColor: "#ccc",
@@ -858,14 +902,13 @@ const styles = StyleSheet.create({
     position: "absolute", // Asegúrate de que esté en posición absoluta
     backgroundColor: "transparent", // Fondo transparente
   },
-  input2: {
+  input2Login: {
     width: 250,
     height: 20,
     borderColor: "#ccc",
-    left: 600,
     bottom: 220,
-    top: "67%",
-    left: "60%",
+    top: "69%",
+    left: "53%",
     transform: [{ translateX: -125 }, { translateY: -10 }],
     borderWidth: 0,
     paddingHorizontal: 10,
@@ -874,6 +917,64 @@ const styles = StyleSheet.create({
     position: "absolute", // Asegúrate de que esté en posición absoluta
     backgroundColor: "transparent", // Fondo transparente
   },
+  input1Register: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: 510,
+    bottom: 360,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
+  input2Register: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: 510,
+    bottom: 300,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
+  input3Register: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: 510,
+    bottom: 225,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
+
+  input1Forgot: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: -380,
+    bottom: 275,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
+
 
   fieldregister3: {
     position: "absolute",
