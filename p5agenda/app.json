@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "p5agenda",
+    "name": "Persona 5 Agenda",
     "slug": "p5agenda",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#080808"
     },
     "ios": {
       "supportsTablet": true

@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,11 +8,28 @@ import Animated, {
   withTiming,
   withDelay,
 } from 'react-native-reanimated';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
+import { SplashScreen } from "expo-router";
+
+SplashScreen.preventAutoHideAsync();
+  
+const duration = 3700;
+const delay1 = 1600;
+const delay2 = 2000;
+const delay3 = 3500;
+const easing = Easing.bezier(0.10, -0.5, 0.25, 1);
 
 export default function Index() {
+    setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 1500);
 
+    const sv1 = useSharedValue(0);
+    const sv2 = useSharedValue(0);
+    const loadopacity = useSharedValue(1);
+    const loadopacity2 = useSharedValue(0); 
     const opacity = useSharedValue(1);
+    const fadeopacity = useSharedValue(0);
     const scaleLogo = useSharedValue(1);
     const moveLogoX = useSharedValue(0);
     const moveLogoY = useSharedValue(0);
@@ -31,7 +48,7 @@ export default function Index() {
     const forgotpassmove = useSharedValue(0);
     const forgotpasstitlemove = useSharedValue(0);
   
-  const [pressableDisabled, setPressableDisabled] = useState(false);
+  const [pressableDisabled, setPressableDisabled] = useState(true);
   const [isRegisterPressableActive, setIsRegisterPressableActive] = useState(false);
   const [isForgotPassPressableActive, setIsForgotPassPressableActive] = useState(false);
   const [isLoginButtonPressableActive, setIsLoginButtonPressableActive] = useState(false);
@@ -44,9 +61,48 @@ export default function Index() {
 
 
   useEffect(() => {
+    sv1.value = withDelay(delay1, withRepeat(withTiming(1, { duration, easing }), -1));
+    sv2.value = withDelay(delay2, withRepeat(withTiming(1, { duration, easing }), -1));
     opacity.value = withRepeat(withTiming(0, { duration: 1500, easing: Easing.linear }), -1, true);
+    loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
+    loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
+    setTimeout(() => {
+      setPressableDisabled(false);
+    }, delay3);
   }, []);
+
+  const FadeOpacity = useAnimatedStyle(() => {
+    return {
+      opacity: fadeopacity.value,
+    };
+  });
+
+  const LoadOpacity = useAnimatedStyle(() => {
+    return {
+      opacity: loadopacity.value,
+    };
+  });
+
+  const LoadOpacity2 = useAnimatedStyle(() => {
+    return {
+      opacity: loadopacity2.value,
+    };
+  });
     
+  const LoadFlip1 = useAnimatedStyle(() => {
+    const flip = sv1.value * 360;
+    return {
+      transform: [{ rotateY: `${flip}deg` }],
+    };
+  });
+
+  const LoadFlip2 = useAnimatedStyle(() => {
+    const flip = sv2.value * 360;
+    return {
+      transform: [{ rotateY: `${flip}deg` }],
+    };
+  });
+
   const TapBlinkingOpacity = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
@@ -178,12 +234,14 @@ export default function Index() {
 
   const handleLoginButtonPress = () => {
     console.log("Login button pressed");
-    // Add your navigation or other logic here
+    fadeopacity.value = withTiming(1, { duration: 300 });
+    setTimeout(() => {
+      router.replace("/home");
+    }, 500);
   };
 
   const handleRegisterButtonPress = () => {
     console.log("Registered button pressed");
-    // Add your navigation or other logic here
   };
 
   const handleSendButtonPress = () => {
@@ -239,11 +297,17 @@ export default function Index() {
   return (
     <Pressable onPress={handlePress} disabled={pressableDisabled} style={{flex: 1}}>
       <View
-      style={{
-        flex: 1,
+        style={{
         backgroundColor: "#cc0f1e",
-      }}
+        flex: 1,
+        }}
       >
+          {/* PANTALLA DE CARGA */}
+          <Animated.View style={[styles.container, LoadOpacity]} pointerEvents={'none'}>
+            <Animated.Image source={require("../assets/images/Loading/JokerShade.png")} style={[styles.Loading1, LoadFlip1, LoadOpacity2]} />
+            <Animated.Image source={require("../assets/images/Loading/TakeYourTimeShade.png")} style={[styles.Loading2, LoadFlip2, LoadOpacity2]} />
+          </Animated.View>
+
           {/* IMÁGENES ESTÁTICAS */}
           <Image source={require("../assets/images/Login/PTBGFullRed45.png")} style={styles.ptbg} />
           <Image source={require("../assets/images/Login/Splashes/paint-splatter-10.png")} style={styles.splash0} />
@@ -309,7 +373,9 @@ export default function Index() {
           <Animated.Image source={require("../assets/images/Login/Confirm.png")} style={[styles.confirmbutton, toForgotAnim]} />
           </Pressable>
           <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit1, ButtonBackForgotAnim]} />
-          <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit2, ButtonBackForgotAnim]} />
+        <Animated.Image source={require("../assets/images/Login/StarSplit.png")} style={[styles.starsplit2, ButtonBackForgotAnim]} />
+        
+        <Animated.View style={[styles.blackfade, FadeOpacity]} pointerEvents={'none'}/>
 
         </View>
       </Pressable>
@@ -317,11 +383,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  loadview: {
-    width: "100%",
-    height: "100%",
-    zIndex: 3,
-  },
   sendbutton: {
     position: "absolute",
     width: 160,
@@ -677,5 +738,34 @@ const styles = StyleSheet.create({
         height: 60,
         left: 12,
         bottom: 15,
-    },
+  },
+  blackfade: {
+    position: "absolute",
+    width: 450,
+    height: 900,
+    left: 0,
+    top: 0,
+    zIndex: 4,
+    opacity: 0,
+    backgroundColor: "black",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#080808",
+    zIndex: 4,  
+},
+Loading1: {
+    position: "absolute",
+    width: 180,
+    height: 180,
+    right: 10,
+    bottom: 60,
+  },
+  Loading2: {
+    position: "absolute",
+    width: 160,
+    height: 80,
+    right: 15,
+    bottom: -5,
+  },
 });
