@@ -15,8 +15,7 @@ import Animated, {
   withTiming,
   withDelay,
 } from 'react-native-reanimated';
-import { router } from 'expo-router';
-import { SplashScreen } from "expo-router";
+import { Link, router, SplashScreen } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
   
@@ -482,6 +481,12 @@ export default function Index() {
         backgroundColor: "#cc0f1e",
       }}
       >
+          {/* PANTALLA DE CARGA */}
+          <Animated.View style={[styles.container, LoadOpacity]} pointerEvents={'none'}>
+            <Animated.Image source={require("../assets/images/Loading/JokerShade.png")} style={[styles.Loading1, LoadFlip1, LoadOpacity2]} />
+            <Animated.Image source={require("../assets/images/Loading/TakeYourTimeShade.png")} style={[styles.Loading2, LoadFlip2, LoadOpacity2]} />
+          </Animated.View>
+
         {/* IMÁGENES ESTÁTICAS */}
         <Image
           source={require("../assets/images/Login/PTBGFullRed45.png")}
@@ -770,7 +775,8 @@ export default function Index() {
           source={require("../assets/images/Login/StarSplit.png")}
           style={[styles.starsplit2, ButtonBackForgotAnim]}
         />
-              <Animated.View style={[styles.blackfade, FadeOpacity]} pointerEvents={'none'}/>
+        <Animated.View style={[styles.blackfade, FadeOpacity]} pointerEvents={'none'} />
+        
       </View>
     </Pressable>
   );
