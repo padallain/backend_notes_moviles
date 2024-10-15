@@ -1,22 +1,28 @@
-import { Text, View, StyleSheet, Image, Pressable } from "react-native";
-import React, { useState, useEffect } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  ScrollView,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-} from 'react-native-reanimated';
-import { router } from 'expo-router';
+} from "react-native-reanimated";
+import { router } from "expo-router";
 
 export default function Home() {
-
   const fadeopacity = useSharedValue(1);
 
   useEffect(() => {
     setTimeout(() => {
-      fadeopacity.value = withTiming(0, { duration: 300 });
-    }, (500));
+      fadeopacity.value = withTiming(0, { duration: 500 });
+    }, 500);
   }, []);
 
   const FadeOpacity = useAnimatedStyle(() => {
@@ -27,21 +33,31 @@ export default function Home() {
 
   return (
     <View
-    style={{
-    backgroundColor: "#0f0f0f",
-    flex: 1,
-    }}
-  >
-      <Animated.View style={[styles.blackfade, FadeOpacity]} pointerEvents={'none'}/>
-      <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-      <Image source={require("../assets/images/react-logo.png")}/>
-      <Text style={{color: "white"}}>Welcome to the Home Page</Text>
-        </View>
-      </View>
+      style={{
+        flex: 1,
+      }}
+    >
+      <Animated.View
+        style={[styles.blackfade, FadeOpacity]}
+        pointerEvents={"none"}
+      />
+      <Image
+        source={require("../assets/images/DarkStarsBGHD.png")}
+        style={styles.bg}
+      />
+    </View>
   );
 }
 
 styles = StyleSheet.create({
+  bg: {
+    position: "absolute",
+    width: 450,
+    height: 900,
+    left: 0,
+    top: 0,
+    zIndex: 3,
+  },
   blackfade: {
     position: "absolute",
     width: 450,
