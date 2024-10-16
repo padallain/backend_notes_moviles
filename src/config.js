@@ -1,8 +1,19 @@
-// config.js
 require('dotenv').config();
 
-module.exports = {
-    DB_URI: process.env.DB_URI,
-    PORT: process.env.PORT || 3000,
-    SECRET_KEY: process.env.SECRET_KEY,
+const DB_URI = process.env.DB_URI;
+const mongoose = require('mongoose');
+
+const connectToDatabase = async () => {
+    try {
+        await mongoose.connect(DB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000,
+        });
+        console.log('Connected to MongoDB');
+    } catch (err) {
+        console.error('Error connecting to MongoDB:', err);
+    }
 };
+
+module.exports = { connectToDatabase };
