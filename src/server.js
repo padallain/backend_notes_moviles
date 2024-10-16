@@ -12,6 +12,12 @@ app.use(cors());
 
 app.use(morgan("dev"));
 
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} - ${new Date().toISOString()}`);
+  next();
+});
+
+
 app.use(session({
     secret: "your_secret_key",
     resave: false,
