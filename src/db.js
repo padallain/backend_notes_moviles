@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-const { DB_URI } = require('./config');
+const { DB_URI, PORT, SECRET_KEY } = require('./config');
 
 const connectToDatabase = async () => {
     try {
+        // Conecta a MongoDB usando la URI desde config.js
         await mongoose.connect(DB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000,
+            serverSelectionTimeoutMS: 5000, // Establece un tiempo de espera de 5 segundos
         });
         console.log('Connected to MongoDB');
     } catch (err) {
@@ -14,5 +15,4 @@ const connectToDatabase = async () => {
     }
 };
 
-// Exporta la función connectToDatabase
 module.exports = { connectToDatabase };
