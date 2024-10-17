@@ -6,7 +6,21 @@ const styles = StyleSheet.create({
     // Tamaño y Fuente de Letra de todos los Text Inputs
     fontFamily: "P5-Font",
     fontSize: 18,
+    width: '80%',      // Asegurar que el ancho sea el 100% del contenedor
+    borderColor: '#aaa',
+    overflow: 'hidden', // Ocultar el contenido que se sale del área visible
+    maxWidth: '80%',   // Limitar el tamaño máximo del input 
   },
+  errorText: {
+    color: 'red',
+    marginTop: 5,
+    bottom:75
+  },
+  errorTextPassword: {
+    color: 'red',
+    marginTop: 5,
+    bottom:130,
+     },
   fieldlogin1: {
     position: "absolute",
     width: 250,

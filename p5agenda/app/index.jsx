@@ -1,4 +1,4 @@
-import { View, Image, Pressable, TextInput } from "react-native";
+import { View, Image, Pressable, TextInput, Text } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
   Easing,
@@ -201,7 +201,38 @@ export default function Index() {
     useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+
+  const validateEmail = (text) => {
+    // Actualiza el estado del email antes de validar
+    setEmail(text);
+
+    // Expresión regular para validar correos
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Si el texto no pasa la validación, muestra un error
+    if (!emailRegex.test(text)) {
+      setEmailError("Invalid email format");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const validatePassword = (text) => {
+    setPassword(text);
+
+    // Verificar si la contraseña tiene al menos 8 caracteres
+    if (text.length < 8) {
+      setPasswordError("Password must be at least 8 characters");
+      console.log("Password too short");
+    } else {
+      setPasswordError("");
+      console.log("Password is valid");
+    }
+  };
 
   const handlePress = () => {
     console.log("Tap To Begin Pressed");
@@ -320,46 +351,81 @@ export default function Index() {
   const handleLoginButtonPress = async () => {
     console.log("Login button pressed");
 
-    fadeopacity.value = withTiming(1, { duration: 300 });
-    setTimeout(() => {
-      router.replace("/home");
-    }, 500);
-
     // Datos de inicio de sesión (capturados de los inputs)
     const loginData = {
-      email_user: username, // Asumiendo que `username` es el valor capturado del input
-      password: password, // Asumiendo que `password` es el valor capturado del input
+      email_user: email, // El valor capturado del input de email
+      password: password, // El valor capturado del input de password
     };
 
-    // console.log(loginData);
-    // try {
-    //   const response = await fetch("http://localhost:3000/login", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(loginData),
-    //   });
+    console.log(loginData);
 
-    //   const data = await response.json();
+    try {
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
-    //   if (!response.ok) {
-    //     console.error("Response Error:", data.message);
-    //     // Manejo de errores
-    //   } else {
-    //     // Manejo del éxito
-    //     fadeopacity.value = withTiming(1, { duration: 300 });
-    //     setTimeout(() => {
-    //       router.replace("/home");
-    //     }, 500);
-    //   }
-    // } catch (error) {
-    //   console.error("Error en la petición:", error);
-    // }
+      const data = await response.json();
+
+      if (!response.ok) {
+
+        // Cambiar el mensaje de error si es "Invalid credentials"
+        const errorMessage = data.message === "Invalid credentials" 
+          ? "WRONG EMAIL OR PASSWORD" 
+          : data.message || "Login failed. Please check your credentials.";
+         console.error(errorMessage)
+  
+        setErrorMessage(errorMessage);
+      } else {
+        console.log("Login successful");
+
+        // Solo activar el fade y redirigir si el login es exitoso
+        fadeopacity.value = withTiming(1, { duration: 300 });
+        setTimeout(() => {
+          router.replace("/home");
+        }, 500);
+      }
+    } catch (error) {
+      // console.error("Error en la petición:", error);
+      // Manejar el error de conexión
+      
+    }
   };
 
-  const handleRegisterButtonPress = () => {
+  const handleRegisterButtonPress = async () => {
     console.log("Registered button pressed");
+
+    try {
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResponseMessage("User registered successfully");
+      } else {
+        setResponseMessage(
+          `Error: ${data.message || "Failed to register user"}`
+        );
+      }
+    } catch (error) {
+      setResponseMessage("Error connecting to the server");
+      console.error(error);
+    }
   };
 
   const handleSendButtonPress = () => {
@@ -605,12 +671,23 @@ export default function Index() {
         />
         <Animated.View style={[styles.input1Login, BookLoginAnim]}>
           <TextInput
-            placeholder="Enter Username"
+            placeholder="Enter Email"
             placeholderTextColor="#aaa"
-            value={username}
-            onChangeText={setUsername}
+            value={email}
+            onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
+            keyboardType="email-address"
             style={styles.input2}
+            multiline={false} // No permitir múltiples líneas
+            scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+            numberOfLines={1} // Forzar una sola línea
+            ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+            maxLength={50}
           />
+
+          {/* Mostrar mensaje de error si el correo no es válido
+          {emailError ? (
+            <Text style={styles.errorText}>{emailError}</Text>
+          ) : null} */}
         </Animated.View>
         <Animated.Image
           source={require("../assets/images/Login/Field.png")}
@@ -620,11 +697,17 @@ export default function Index() {
           <TextInput
             placeholder="Enter Password"
             placeholderTextColor="#aaa"
-            secureTextEntry
             value={password}
-            onChangeText={setPassword}
+            onChangeText={validatePassword} // Valida la contraseña en cada cambio
+            secureTextEntry={true} // Ocultar el texto
             style={styles.input2}
+            multiline={false}
+            scrollEnabled={false}
           />
+          {/* Mostrar mensaje de error si la contraseña no es válida
+          {passwordError ? (
+            <Text style={styles.errorTextPassword}>{passwordError}</Text>
+          ) : null} */}
         </Animated.View>
         <Animated.Image
           source={require("../assets/images/Login/Field.png")}
@@ -659,12 +742,17 @@ export default function Index() {
 
         <Animated.View style={[styles.input2Register, toRegisterAnim]}>
           <TextInput
-            placeholder="Enter your email"
+            placeholder="Enter Email"
             placeholderTextColor="#aaa"
-            secureTextEntry
             value={email}
-            onChangeText={setPassword}
+            onChangeText={validateEmail}
+            keyboardType="email-address"
             style={styles.input2}
+            multiline={false} // No permitir múltiples líneas
+            scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+            numberOfLines={1} // Forzar una sola línea
+            ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+            maxLength={50}
           />
         </Animated.View>
 
@@ -719,12 +807,17 @@ export default function Index() {
         />
         <Animated.View style={[styles.input1Forgot, toForgotAnim]}>
           <TextInput
-            placeholder="Enter your email"
+            placeholder="Enter Email"
             placeholderTextColor="#aaa"
-            secureTextEntry
             value={email}
-            onChangeText={setEmail}
+            onChangeText={validateEmail}
+            keyboardType="email-address"
             style={styles.input2}
+            multiline={false} // No permitir múltiples líneas
+            scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+            numberOfLines={1} // Forzar una sola línea
+            ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+            maxLength={50}
           />
         </Animated.View>
 
