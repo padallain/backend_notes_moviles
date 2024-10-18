@@ -201,7 +201,7 @@ const checkResetToken = async (req, res) => {
 
 
 
-const saveNewPassword = async (req, res) => {
+const savePassword = async (req, res) => {
   const { email_user, newPassword, confirmPassword } = req.body;
 
   console.log(req.body)
@@ -243,6 +243,6 @@ module.exports = {
   createLogin,
   resetPassword,
   checkResetToken,
-  saveNewPassword
+  savePassword
 
 }
