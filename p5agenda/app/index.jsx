@@ -285,6 +285,10 @@ export default function Index() {
     setIsLoginButtonPressableActive(false);
     setIsLoginBack1PressableActive(true);
     setIsRegisterButtonPressableActive(true);
+      setUsername("");// Resetea los inputs
+      setEmail(""); // Borra el email
+      setPassword(""); // Borra el password
+  
     console.log("Register button pressed");
     loginbook2.value = withTiming(
       -800,
@@ -374,13 +378,13 @@ export default function Index() {
       const data = await response.json();
 
       if (!response.ok) {
-
         // Cambiar el mensaje de error si es "Invalid credentials"
-        const errorMessage = data.message === "Invalid credentials" 
-          ? "WRONG EMAIL OR PASSWORD" 
-          : data.message || "Login failed. Please check your credentials.";
-         console.error(errorMessage)
-  
+        const errorMessage =
+          data.message === "Invalid credentials"
+            ? "WRONG EMAIL OR PASSWORD"
+            : data.message || "Login failed. Please check your credentials.";
+        console.error(errorMessage);
+
         setErrorMessage(errorMessage);
       } else {
         console.log("Login successful");
@@ -394,12 +398,19 @@ export default function Index() {
     } catch (error) {
       // console.error("Error en la petición:", error);
       // Manejar el error de conexión
-      
     }
   };
 
   const handleRegisterButtonPress = async () => {
     console.log("Registered button pressed");
+
+    const dataRegister = {
+      email_user: email, // El valor capturado del input de email
+      password: password, // El valor capturado del input de password
+      username:username
+    };
+
+    console.log(dataRegister)
 
     try {
       const response = await fetch(
@@ -409,16 +420,18 @@ export default function Index() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(dataRegister),
         }
       );
 
       const data = await response.json();
 
+      console.log(data)
+
       if (response.ok) {
-        setResponseMessage("User registered successfully");
+        console.log("User registered successfully");
       } else {
-        setResponseMessage(
+        console.log(
           `Error: ${data.message || "Failed to register user"}`
         );
       }
@@ -458,7 +471,10 @@ export default function Index() {
   };
 
   const BackToLogin1ButtonPress = () => {
+
     console.log("Back To Login button pressed");
+    setEmail('');  // Borra el email
+    setPassword('');  // Borra el password
     setIsLoginBack1PressableActive(false);
     setIsRegisterButtonPressableActive(false);
     setIsRegisterPressableActive(true);
@@ -735,7 +751,7 @@ export default function Index() {
             placeholder="Enter Username"
             placeholderTextColor="#aaa"
             value={username}
-            onChangeText={setUsername}
+            onChangeText={(text) => setUsername(text.toLowerCase())} // Convierte a minúsculas
             style={styles.input2}
           />
         </Animated.View>
@@ -745,7 +761,7 @@ export default function Index() {
             placeholder="Enter Email"
             placeholderTextColor="#aaa"
             value={email}
-            onChangeText={validateEmail}
+            onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
             keyboardType="email-address"
             style={styles.input2}
             multiline={false} // No permitir múltiples líneas
