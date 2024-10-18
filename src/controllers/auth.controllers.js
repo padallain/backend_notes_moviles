@@ -7,39 +7,19 @@ const { time } = require("console");
 
 
 const register = async (req, res) => {
-  try {
-    const { email_user, password, username } = req.body;
+  const { email_user, password, username } = req.body;
+  console.log(req.body)
 
+  try {
     // Verificar que los campos requeridos estén presentes
     if (!email_user || !password || !username) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Validación del formato de correo
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email_user)) {
-      return res.status(400).json({ message: 'Invalid email format' });
-    }
-
-    // Validación de la contraseña (mínimo 8 caracteres, mayúsculas, minúsculas y caracteres especiales)
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-    }
-    if (!/[a-z]/.test(password)) {
-      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
-    }
-    if (!/[A-Z]/.test(password)) {
-      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
-    }
-    if (!/[@$!%*?&]/.test(password)) {
-      return res.status(400).json({ message: 'Password must contain at least one special character' });
-    }
-
     // Verificar si el usuario o el correo ya existen en la base de datos
     const existingEmail = await User.findOne({ email_user });
     if (existingEmail) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: 'Email or username already exists' });
     }
 
     const existingUser = await User.findOne({ username });
@@ -52,6 +32,7 @@ const register = async (req, res) => {
       username,
       email_user,
       password_user: password,
+      // token y resetTokenExpires serán null o undefined por defecto
     });
 
     // Guardar el usuario en la base de datos
