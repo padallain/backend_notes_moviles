@@ -260,7 +260,7 @@ export default function Index() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [secretCode, setSecretCode] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
 
   const validateEmail = (text) => {
@@ -351,6 +351,7 @@ export default function Index() {
     setUsername(""); // Resetea los inputs
     setEmail(""); // Borra el email
     setPassword(""); // Borra el password
+
 
     console.log("Register button pressed");
     loginbook2.value = withTiming(
@@ -500,6 +501,29 @@ export default function Index() {
       if (response.ok) {
         console.log("User registered successfully");
         setResponseMessage("User registered successfully");
+        loginbook2.value = withTiming(
+          -400,
+          { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+          () => {
+            loginbook2.value = -400;
+          }
+        );
+        registermove.value = withTiming(
+          0,
+          { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+          () => {
+            registermove.value = 0;
+          }
+        );
+        buttonsmove.value = withTiming(-300, {
+          duration: 1300,
+          easing: Easing.bezier(0.25, -0.5, 0.25, 1),
+        });
+        backbuttonregistermove.value = withTiming(300, {
+          duration: 1300,
+          easing: Easing.bezier(0.25, -0.25, 0.25, 1),
+        });
+
       } else {
         let errorMessage;
 
@@ -541,27 +565,89 @@ export default function Index() {
     await playSound(require("../assets/images/SFX/Select.wav"));
     setIsSendPressableActive(false);
     setIsVerifyPressableActive(true);
-    forgotpassmove.value = withTiming(
-      900,
-      { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
-      () => {
-        forgotpassmove.value = 900;
-      }
-    );
+
+    const dataRecover = {
+      email_user: email, // El valor capturado del input de email
+    };
+    console.log(dataRecover);
+
+   
+
+    try {
+        const response = await fetch("https://backend-notes-moviles.onrender.com/resetPassword", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataRecover),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log("Reset password email sent successfully", data);
+            forgotpassmove.value = withTiming(
+              900,
+              { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+              () => {
+                  forgotpassmove.value = 900;
+              }
+          );
+        } else {
+            console.log(`Error: ${data.message || "Failed to send reset password email"}`);
+        }
+    } catch (error) {
+        console.error("Error connecting to the server:", error.message);
+    }
+};
+
+
+const handleVerifyButtonPress = async () => {
+  console.log("Verify button pressed");
+  await playSound(require("../assets/images/SFX/Select.wav"));
+  setIsVerifyPressableActive(false);
+  setIsConfirmPressableActive(true);
+
+  // Verifica que el resetCode tenga 6 caracteres
+  if (secretCode.length !== 6) {
+      console.error("Incomplete code");
+      setIsVerifyPressableActive(true); // Reactivar el botón si el código es incorrecto
+      setIsConfirmPressableActive(false);
+      return;
+  }
+
+  const dataCheck = {
+      email_user: email, // El valor capturado del input de email
+      resetCode: secretCode,
   };
-  const handleVerifyButtonPress = async () => {
-    console.log("Verify button pressed");
-    await playSound(require("../assets/images/SFX/Select.wav"));
-    setIsVerifyPressableActive(false);
-    setIsConfirmPressableActive(true);
-    forgotpassmove.value = withTiming(
-      1300,
-      { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
-      () => {
-        forgotpassmove.value = 1300;
+  console.log(dataCheck);
+
+  try {
+      const response = await fetch("https://backend-notes-moviles.onrender.com/checkReset", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataCheck),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+          console.log("Verification successful", data);
+          forgotpassmove.value = withTiming(
+              1300,
+              { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+              () => {
+                  forgotpassmove.value = 1300;
+              }
+          );
+      } else {
+          console.log(`Error: ${data.message || "Failed to verify reset code"}`);
       }
-    );
-  };
+  } catch (error) {
+      console.error("Error connecting to the server:", error.message);
+  }
+};
+
   const handleConfirmButtonPress = async () => {
     console.log("Confirm button pressed");
     await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
@@ -941,6 +1027,21 @@ export default function Index() {
             source={require("../assets/images/Login/Field.png")}
             style={[styles.fieldforgot2, toForgotAnim]}
           />
+           <Animated.View style={[styles.input2Forgot, toForgotAnim]}>
+            <TextInput
+              placeholder="Enter the code"
+              placeholderTextColor="#aaa"
+              value={secretCode}
+              onChangeText={(text) => setSecretCode(text.toLowerCase())} // Convierte a minúsculas
+              keyboardType="email-address"
+              style={styles.input2}
+              multiline={false} // No permitir múltiples líneas
+              scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+              numberOfLines={1} // Forzar una sola línea
+              ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+              maxLength={6}
+            />
+          </Animated.View>
           <Animated.Image
             source={require("../assets/images/Login/Field.png")}
             style={[styles.fieldforgot3, toForgotAnim]}

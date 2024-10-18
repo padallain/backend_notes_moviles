@@ -200,10 +200,49 @@ const checkResetToken = async (req, res) => {
 };
 
 
+
+const saveNewPassword = async (req, res) => {
+  const { email_user, newPassword, confirmPassword } = req.body;
+
+  console.log(req.body)
+
+  // Verificar si las contraseñas coinciden
+  if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+  }
+
+  // Validación de la contraseña
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one number, and one special character' });
+  }
+
+  try {
+     
+      // Actualizar la contraseña del usuario en la base de datos
+      const user = await User.findOneAndUpdate(
+          { email_user },
+          { password_user },
+          { new: true }
+      );
+
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      res.status(200).json({ message: "Password reset successfully" });
+  } catch (err) {
+      console.error('Error updating password:', err);
+      res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 module.exports = {
   register,
   createLogin,
   resetPassword,
-  checkResetToken
+  checkResetToken,
+  saveNewPassword
 
 }
