@@ -67,11 +67,11 @@ const register = async (req, res) => {
 
 const createLogin = async (req, res) => {
   try {
-      const { email_user, password } = req.body;
-      console.log(email_user, password);
+      const { username, password } = req.body;
+      console.log(username, password);
       
       // Busca el usuario en la base de datos por el email
-      const user = await User.findOne({ email_user });
+      const user = await User.findOne({ username });
       console.log(user);
       
       if (user) {
