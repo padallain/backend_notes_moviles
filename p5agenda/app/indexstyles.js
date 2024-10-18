@@ -156,6 +156,21 @@ const styles = StyleSheet.create({
     left: -835,
     bottom: 240,
   },
+
+  input2Forgot: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: -815,
+    bottom: 285,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  },
   fieldforgot3: {
     position: "absolute",
     width: 250,
@@ -163,6 +178,21 @@ const styles = StyleSheet.create({
     left: -1235,
     bottom: 300,
   },
+
+  input3Forgot: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: -1235,
+    bottom: 285,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  }, 
   fieldforgot4: {
     position: "absolute",
     width: 250,
@@ -170,6 +200,20 @@ const styles = StyleSheet.create({
     left: -1235,
     bottom: 220,
   },
+  input4Forgot: {
+    width: 250,
+    height: 20,
+    borderColor: "#ccc",
+    left: -1235,
+    bottom: 210,
+    transform: [{ translateX: -125 }, { translateY: -10 }],
+    borderWidth: 0,
+    paddingHorizontal: 10,
+    color: "black", // Color del texto para que sea legible
+    zIndex: 10,
+    position: "absolute", // Asegúrate de que esté en posición absoluta
+    backgroundColor: "transparent", // Fondo transparente
+  }, 
   sendbutton: {
     position: "absolute",
     width: 160,
