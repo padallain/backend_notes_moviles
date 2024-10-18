@@ -242,7 +242,7 @@ const eraseAccount = async (req, res) => {
   const { username } = req.body;
 
   try {
-      const result = await User.findOneAndDelete({ email_user });
+      const result = await User.findOneAndDelete({username});
       if (result) {
           res.status(200).json({ message: `User with email ${email_user} deleted successfully.` });
       } else {
