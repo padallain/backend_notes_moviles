@@ -222,7 +222,7 @@ const savePassword = async (req, res) => {
       // Actualizar la contraseña del usuario en la base de datos
       const user = await User.findOneAndUpdate(
           { email_user },
-          { password_user },
+          { password_user:newPassword },
           { new: true }
       );
 
