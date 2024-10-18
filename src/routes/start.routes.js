@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, createLogin, resetPassword, checkResetToken,savePassword } = require('../controllers/auth.controllers');
+const { register, createLogin, resetPassword, checkResetToken,savePassword, eraseAccount } = require('../controllers/auth.controllers');
 const router = express.Router();
 const Notes = require('../controllers/notes.controllers'); 
 const categoryController = require('../controllers/category.controllers');
@@ -15,6 +15,7 @@ router.post('/login', createLogin);
 router.post('/resetPassword', resetPassword);
 router.post('/checkReset', checkResetToken);
 router.post('/newPassword', savePassword);
+router.delete('/deleteUser', eraseAccount)
 
 // Notes routes
 router.get('/getNotes/:userId', Notes.getNotes.bind(Notes)); // Get notes for a specific user

@@ -238,11 +238,28 @@ const savePassword = async (req, res) => {
 };
 
 
+const eraseAccount = async (req, res) => {
+  const { username } = req.body;
+
+  try {
+      const result = await User.findOneAndDelete({ email_user });
+      if (result) {
+          res.status(200).json({ message: `User with email ${email_user} deleted successfully.` });
+      } else {
+          res.status(404).json({ message: `User with email ${email_user} not found.` });
+      }
+  } catch (err) {
+      res.status(500).json({ message: 'Error deleting user', error: err.message });
+  }
+};
+
+
 module.exports = {
   register,
   createLogin,
   resetPassword,
   checkResetToken,
-  savePassword
+  savePassword, 
+  eraseAccount
 
 }
