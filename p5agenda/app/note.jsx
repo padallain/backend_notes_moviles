@@ -23,7 +23,7 @@ import { playSound } from "../components/soundUtils";
 import { Colors } from "../constants/Colors";
 
 export default function Note() {
-  const fadeopacity = useSharedValue(0);
+  const fadeopacity = useSharedValue(1);
   let [notetitle, setNoteTitle] = useState("Note 1");
   let [notedesc, setNoteDesc] = useState("");
 
@@ -74,7 +74,7 @@ export default function Note() {
     <View
       style={{
         flex: 1,
-        backgroundColor: Colors.c0,
+        backgroundColor: Colors.c1,
       }}
     >
       <Animated.View
@@ -86,7 +86,7 @@ export default function Note() {
         style={notestyles.starbg}
       />
       <Image
-        source={require("../assets/images/Login/SplitStripe.png")}
+        source={require("../assets/images/Login/SplitStripe2.png")}
         style={notestyles.splitstripe}
         pointerEvents={"none"}
       />
@@ -109,12 +109,12 @@ export default function Note() {
         style={notestyles.delete}
       />
       <Image
-        source={require("../assets/images/Note/Silhouettes/0.png")}
+        source={require("../assets/images/Note/Silhouettes/1.png")}
         style={notestyles.bg}
       />
       <ScrollView style={notestyles.scrollview}>
         <Image
-          source={require("../assets/images/Home/Categories/0.png")}
+          source={require("../assets/images/Home/Categories/1.png")}
           style={notestyles.cat}
         />
         <Text style={notestyles.textcat}>NOTES</Text>
@@ -130,7 +130,7 @@ export default function Note() {
           value={notetitle}
           onChangeText={setNoteTitle}
           style={notestyles.notetitleinput}
-          maxLength={21}
+          maxLength={23}
           multiline={false}
         />
         <TextInput
@@ -176,11 +176,11 @@ notestyles = StyleSheet.create({
     fontFamily: "P5-Font",
     fontSize: 23,
     color: "white",
-    left: 16,
+    width: 270,
+    left: 80,
     top: -112,
     zIndex: 2,
     textAlign: "center",
-    paddingHorizontal: 60,
   },
   title: {
     width: 400,
@@ -270,10 +270,10 @@ notestyles = StyleSheet.create({
     position: "absolute",
     width: 420,
     height: 220,
-    left: -30,
-    top: 110,
-    transform: [{ rotate: "5deg" }],
-    zIndex: 4,
+    left: -25,
+    top: 45,
+    transform: [{ rotate: "-2deg" }],
+    zIndex: 3,
     pointerEvents: "none",
   },
   starbg: {

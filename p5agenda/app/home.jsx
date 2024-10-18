@@ -13,7 +13,7 @@ import AnimatedButton from "../components/AnimatedButton";
 import { playSound } from "../components/soundUtils";
 
 export default function Home() {
-  const fadeopacity = useSharedValue(0);
+  const fadeopacity = useSharedValue(1);
 
   useEffect(() => {
     setTimeout(() => {
@@ -114,6 +114,10 @@ export default function Home() {
         source={require("../assets/images/Home/NewNote.png")}
         pressStyle={homestyles.newnotepressable}
         style={homestyles.newnote}
+      />
+      <Image
+        source={require("../assets/images/TarotCards/1.png")}
+        style={{ width: 20, height: 50, left: 100, top: 300 }}
       />
       <ScrollView></ScrollView>
     </View>
