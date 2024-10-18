@@ -285,10 +285,10 @@ export default function Index() {
     setIsLoginButtonPressableActive(false);
     setIsLoginBack1PressableActive(true);
     setIsRegisterButtonPressableActive(true);
-      setUsername("");// Resetea los inputs
-      setEmail(""); // Borra el email
-      setPassword(""); // Borra el password
-  
+    setUsername(""); // Resetea los inputs
+    setEmail(""); // Borra el email
+    setPassword(""); // Borra el password
+
     console.log("Register button pressed");
     loginbook2.value = withTiming(
       -800,
@@ -316,6 +316,7 @@ export default function Index() {
 
   const handleForgotPassPress = () => {
     console.log("Forgot Password button pressed");
+    setEmail(""); // Borra el email
     setIsRegisterPressableActive(false);
     setIsForgotPassPressableActive(false);
     setIsLoginButtonPressableActive(false);
@@ -407,10 +408,10 @@ export default function Index() {
     const dataRegister = {
       email_user: email, // El valor capturado del input de email
       password: password, // El valor capturado del input de password
-      username:username
+      username: username,
     };
 
-    console.log(dataRegister)
+    console.log(dataRegister);
 
     try {
       const response = await fetch(
@@ -425,34 +426,89 @@ export default function Index() {
       );
 
       const data = await response.json();
-
-      console.log(data)
+      console.log(data);
 
       if (response.ok) {
         console.log("User registered successfully");
+        setResponseMessage("User registered successfully");
       } else {
-        console.log(
-          `Error: ${data.message || "Failed to register user"}`
-        );
+    
+        let errorMessage;
+
+        switch (data.message) {
+          case "Invalid email formar":
+            errorMessage = "WRONG EMAIL FORMAT";
+            break;
+          case "User already exists":
+            errorMessage = "User already exists, please try logging in.";
+            break;
+          case "Password must be at least 8 characters long":
+            errorMessage = "Password must be at least 8 characters long";
+            break;
+          case "Password must contain at least one lowercase letter":
+            errorMessage =
+              "Password must contain at least one lowercase letter";
+            break;
+          case "Password must contain at least one upper letter":
+            errorMessage = "Password must contain at least one upper letter";
+            break;
+          case "assword must contain at least one special character":
+            errorMessage = "password must contain at least one special character";
+            break;
+          default:
+            errorMessage = data.message || "Failed to register user";
+        }
+
+        console.error(errorMessage)
       }
     } catch (error) {
-      setResponseMessage("Error connecting to the server");
-      console.error(error);
+      console.error("Error connecting to the server:", error.message);
+      setResponseMessage(`Error connecting to the server: ${error.message}`);
     }
   };
 
-  const handleSendButtonPress = () => {
+  const handleSendButtonPress = async () => {
     console.log("Send button pressed");
+    
     setIsSendPressableActive(false);
     setIsVerifyPressableActive(true);
-    forgotpassmove.value = withTiming(
-      900,
-      { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
-      () => {
-        forgotpassmove.value = 900;
-      }
-    );
-  };
+
+    
+
+    const dataforgot = {
+      email_user: email, // El valor capturado del input de email
+    };
+
+    console.log(dataforgot)
+
+    try {
+        const response = await fetch("https://backend-notes-moviles.onrender.com/resetPassword", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataforgot),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log("Reset password email sent successfully", data);
+        
+            forgotpassmove.value = withTiming(
+              900,
+              { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+              () => {
+                  forgotpassmove.value = 900;
+              }
+          );
+        } else {
+            console.error(`Error: ${data.message || "Failed to send reset password email"}`);
+        }
+    } catch (error) {
+        console.error("Error connecting to the server:", error.message);
+    }
+};
+
   const handleVerifyButtonPress = () => {
     console.log("Verify button pressed");
     setIsVerifyPressableActive(false);
@@ -471,10 +527,9 @@ export default function Index() {
   };
 
   const BackToLogin1ButtonPress = () => {
-
     console.log("Back To Login button pressed");
-    setEmail('');  // Borra el email
-    setPassword('');  // Borra el password
+    setEmail(""); // Borra el email
+    setPassword(""); // Borra el password
     setIsLoginBack1PressableActive(false);
     setIsRegisterButtonPressableActive(false);
     setIsRegisterPressableActive(true);
@@ -822,11 +877,11 @@ export default function Index() {
           style={[styles.fieldforgot1, toForgotAnim]}
         />
         <Animated.View style={[styles.input1Forgot, toForgotAnim]}>
-          <TextInput
+        <TextInput
             placeholder="Enter Email"
             placeholderTextColor="#aaa"
             value={email}
-            onChangeText={validateEmail}
+            onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
             keyboardType="email-address"
             style={styles.input2}
             multiline={false} // No permitir múltiples líneas

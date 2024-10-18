@@ -3,9 +3,14 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   // TEXT INPUTS DE PRIMERO ACOMPAÑADOS POR SU FIELD RESPECTIVO
   input2: {
-    // Tamaño y Fuente de Letra de todos los Text Inputs
     fontFamily: "P5-Font",
     fontSize: 18,
+    width: 150,       // Ancho fijo
+    height: 40,       // Alto fijo
+    padding: 10,
+    backgroundColor: 'transparent',
+    color: '#000',
+  
   },
   fieldlogin1: {
     position: "absolute",
@@ -64,7 +69,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderColor: "#ccc",
     left: 510,
-    bottom: 360,
+    bottom: 370,
     transform: [{ translateX: -125 }, { translateY: -10 }],
     borderWidth: 0,
     paddingHorizontal: 10,
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderColor: "#ccc",
     left: 510,
-    bottom: 225,
+    bottom: 230,
     transform: [{ translateX: -125 }, { translateY: -10 }],
     borderWidth: 0,
     paddingHorizontal: 10,
@@ -127,7 +132,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderColor: "#ccc",
     left: -380,
-    bottom: 275,
+    bottom: 285,
     transform: [{ translateX: -125 }, { translateY: -10 }],
     borderWidth: 0,
     paddingHorizontal: 10,
