@@ -258,7 +258,38 @@ export default function Index() {
     useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+
+  const validateEmail = (text) => {
+    // Actualiza el estado del email antes de validar
+    setEmail(text);
+
+    // Expresión regular para validar correos
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Si el texto no pasa la validación, muestra un error
+    if (!emailRegex.test(text)) {
+      setEmailError("Invalid email format");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const validatePassword = (text) => {
+    setPassword(text);
+
+    // Verificar si la contraseña tiene al menos 8 caracteres
+    if (text.length < 8) {
+      setPasswordError("Password must be at least 8 characters");
+      console.log("Password too short");
+    } else {
+      setPasswordError("");
+      console.log("Password is valid");
+    }
+  };
 
   const handlePress = async () => {
     await playSound(require("../assets/images/SFX/Start.wav"));
@@ -317,6 +348,11 @@ export default function Index() {
     setIsLoginButtonPressableActive(false);
     setIsLoginBack1PressableActive(true);
     setIsRegisterButtonPressableActive(true);
+    setUsername(""); // Resetea los inputs
+    setEmail(""); // Borra el email
+    setPassword(""); // Borra el password
+
+    console.log("Register button pressed");
     loginbook2.value = withTiming(
       -800,
       { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
@@ -343,6 +379,7 @@ export default function Index() {
 
   const handleForgotPassPress = async () => {
     console.log("Forgot Password button pressed");
+    setEmail(""); // Borra el email
     await playSound(require("../assets/images/SFX/Select.wav"));
     setIsRegisterPressableActive(false);
     setIsForgotPassPressableActive(false);
@@ -388,47 +425,125 @@ export default function Index() {
 
     await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
 
-    setTimeout(() => {
-      router.push("/home");
-    }, 500);
-
     // Datos de inicio de sesión (capturados de los inputs)
     const loginData = {
-      email_user: username, // Asumiendo que `username` es el valor capturado del input
-      password: password, // Asumiendo que `password` es el valor capturado del input
+      email_user: email, // El valor capturado del input de email
+      password: password, // El valor capturado del input de password
     };
 
-    // console.log(loginData);
-    // try {
-    //   const response = await fetch("http://localhost:3000/login", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(loginData),
-    //   });
+    console.log(loginData);
 
-    //   const data = await response.json();
+    try {
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
-    //   if (!response.ok) {
-    //     console.error("Response Error:", data.message);
-    //     // Manejo de errores
-    //   } else {
-    //     // Manejo del éxito
-    //     fadeopacity.value = withTiming(1, { duration: 300 });
-    //     setTimeout(() => {
-    //       router.replace("/home");
-    //     }, 500);
-    //   }
-    // } catch (error) {
-    //   console.error("Error en la petición:", error);
-    // }
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Cambiar el mensaje de error si es "Invalid credentials"
+        const errorMessage =
+          data.message === "Invalid credentials"
+            ? "WRONG EMAIL OR PASSWORD"
+            : data.message || "Login failed. Please check your credentials.";
+        console.error(errorMessage);
+
+        setErrorMessage(errorMessage);
+      } else {
+        console.log("Login successful");
+
+        // Solo activar el fade y redirigir si el login es exitoso
+        fadeopacity.value = withTiming(1, { duration: 300 });
+        setTimeout(() => {
+          router.replace("/home");
+        }, 500);
+      }
+    } catch (error) {
+      // console.error("Error en la petición:", error);
+      // Manejar el error de conexión
+    }
   };
 
   const handleRegisterButtonPress = async () => {
     console.log("Registered button pressed");
-    await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
+
+    const dataRegister = {
+      email_user: email, // El valor capturado del input de email
+      password: password, // El valor capturado del input de password
+      username: username,
+    };
+    const handleRegisterButtonPress = async () => {
+      console.log("Registered button pressed");
+      await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
+  
+      const dataRegister = {
+        email_user: email, // El valor capturado del input de email
+        password: password, // El valor capturado del input de password
+        username: username,
+      };
+    console.log(dataRegister);
+
+    try {
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataRegister),
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        console.log("User registered successfully");
+        setResponseMessage("User registered successfully");
+      } else {
+    
+        let errorMessage;
+
+        switch (data.message) {
+          case "Invalid email formar":
+            errorMessage = "WRONG EMAIL FORMAT";
+            break;
+          case "User already exists":
+            errorMessage = "User already exists, please try logging in.";
+            break;
+          case "Password must be at least 8 characters long":
+            errorMessage = "Password must be at least 8 characters long";
+            break;
+          case "Password must contain at least one lowercase letter":
+            errorMessage =
+              "Password must contain at least one lowercase letter";
+            break;
+          case "Password must contain at least one upper letter":
+            errorMessage = "Password must contain at least one upper letter";
+            break;
+          case "assword must contain at least one special character":
+            errorMessage = "password must contain at least one special character";
+            break;
+          default:
+            errorMessage = data.message || "Failed to register user";
+        }
+
+        console.error(errorMessage)
+      }
+    } catch (error) {
+      console.error("Error connecting to the server:", error.message);
+      setResponseMessage(`Error connecting to the server: ${error.message}`);
+    }
   };
+
 
   const handleSendButtonPress = async () => {
     console.log("Send button pressed");
@@ -464,6 +579,8 @@ export default function Index() {
 
   const BackToLogin1ButtonPress = async () => {
     console.log("Back To Login button pressed");
+    setEmail(""); // Borra el email
+    setPassword(""); // Borra el password
     await playSound(require("../assets/images/SFX/Back.wav"));
     setIsLoginBack1PressableActive(false);
     setIsRegisterButtonPressableActive(false);
@@ -610,137 +727,159 @@ export default function Index() {
             style={styles.splash6}
           />
 
-          {/* ASSETS DE WELCOME Y LOGIN */}
+        {/* ASSETS DE WELCOME Y LOGIN */}
+        <Animated.Image
+          source={require("../assets/images/Login/SplitStripe.png")}
+          style={[styles.splitstripe, SplitStripeAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/TapToBegin.png")}
+          style={[styles.tap, TapBlinkingOpacity]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Logo.png")}
+          style={[styles.logo, LogoAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/DarkStarsBGHD.png")}
+          style={[styles.starsbg, StarBGAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/Rights.png")}
+          style={[styles.rights, RightsAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/WriteYourName.png")}
+          style={[styles.wyn, WriteYourName]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/FormBookHDPT.png")}
+          style={[styles.book, BookAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/LoginTitle.png")}
+          style={[styles.login, BookLoginAnim]}
+        />
+        <Pressable
+          onPress={handleLoginButtonPress}
+          disabled={!isLoginButtonPressableActive}
+          style={styles.loginbuttonpressable}
+        >
           <Animated.Image
-            source={require("../assets/images/Login/SplitStripe.png")}
-            style={[styles.splitstripe, SplitStripeAnim]}
+            source={require("../assets/images/Login/Login.png")}
+            style={[styles.loginbutton, ButtonsAnim]}
           />
-          <Animated.Image
-            source={require("../assets/images/Login/TapToBegin.png")}
-            style={[styles.tap, TapBlinkingOpacity]}
-          />
-          <Animated.Image
-            source={require("../assets/images/Logo.png")}
-            style={[styles.logo, LogoAnim]}
-          />
-          <Animated.Image
-            source={require("../assets/images/DarkStarsBGHD.png")}
-            style={[styles.starsbg, StarBGAnim]}
-          />
-          <Animated.Image
-            source={require("../assets/images/Login/Rights.png")}
-            style={[styles.rights, RightsAnim]}
-          />
-          <Animated.Image
-            source={require("../assets/images/Login/WriteYourName.png")}
-            style={[styles.wyn, WriteYourName]}
-          />
-          <Animated.Image
-            source={require("../assets/images/Login/FormBookHDPT.png")}
-            style={[styles.book, BookAnim]}
-          />
-          <Animated.Image
-            source={require("../assets/images/Login/LoginTitle.png")}
-            style={[styles.login, BookLoginAnim]}
-          />
-          <Pressable
-            onPressOut={handleLoginButtonPress}
-            disabled={!isLoginButtonPressableActive}
-            style={styles.loginbuttonpressable}
-          >
-            <Animated.Image
-              source={require("../assets/images/Login/Login.png")}
-              style={[styles.loginbutton, ButtonsAnim]}
-            />
-          </Pressable>
-          <Pressable
-            onPress={handleRegisterPress}
-            disabled={!isRegisterPressableActive}
-            style={styles.registerPressable}
-          >
-            <Animated.Image
-              source={require("../assets/images/Login/RegisterTitle.png")}
-              style={[styles.register, ButtonsAnim]}
-            />
-          </Pressable>
-          <Pressable
-            onPress={handleForgotPassPress}
-            disabled={!isForgotPassPressableActive}
-            style={styles.forgotPressable}
-          >
-            <Animated.Image
-              source={require("../assets/images/Login/ForgotPasswordTitle.png")}
-              style={[styles.forgot, ButtonsAnim]}
-            />
-          </Pressable>
-          <Animated.Image
-            source={require("../assets/images/Login/StarSplit.png")}
-            style={[styles.starsplit, ButtonsAnim]}
-          />
-          <Animated.View style={[styles.input1Login, BookLoginAnim]}>
-            <TextInput
-              placeholder="Enter Username"
-              placeholderTextColor="#aaa"
-              value={username}
-              onChangeText={setUsername}
-              style={styles.input2}
-            />
-          </Animated.View>
-          <Animated.Image
-            source={require("../assets/images/Login/Field.png")}
-            style={[styles.fieldlogin1, BookLoginAnim]}
-          />
-          <Animated.View style={[styles.input2Login, BookLoginAnim]}>
-            <TextInput
-              placeholder="Enter Password"
-              placeholderTextColor="#aaa"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              style={styles.input2}
-            />
-          </Animated.View>
-          <Animated.Image
-            source={require("../assets/images/Login/Field.png")}
-            style={[styles.fieldlogin2, BookLoginAnim]}
-          />
-          {/* ASSETS DE REGISTER */}
+        </Pressable>
+        <Pressable
+          onPress={handleRegisterPress}
+          disabled={!isRegisterPressableActive}
+          style={styles.registerPressable}
+        >
           <Animated.Image
             source={require("../assets/images/Login/RegisterTitle.png")}
-            style={[styles.registertitle, toRegisterAnim]}
+            style={[styles.register, ButtonsAnim]}
           />
+        </Pressable>
+        <Pressable
+          onPress={handleForgotPassPress}
+          disabled={!isForgotPassPressableActive}
+          style={styles.forgotPressable}
+        >
           <Animated.Image
-            source={require("../assets/images/Login/Field.png")}
-            style={[styles.fieldregister1, toRegisterAnim]}
+            source={require("../assets/images/Login/ForgotPasswordTitle.png")}
+            style={[styles.forgot, ButtonsAnim]}
           />
-          <Animated.Image
-            source={require("../assets/images/Login/Field.png")}
-            style={[styles.fieldregister2, toRegisterAnim]}
+        </Pressable>
+        <Animated.Image
+          source={require("../assets/images/Login/StarSplit.png")}
+          style={[styles.starsplit, ButtonsAnim]}
+        />
+        <Animated.View style={[styles.input1Login, BookLoginAnim]}>
+          <TextInput
+            placeholder="Enter Email"
+            placeholderTextColor="#aaa"
+            value={email}
+            onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
+            keyboardType="email-address"
+            style={styles.input2}
+            multiline={false} // No permitir múltiples líneas
+            scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+            numberOfLines={1} // Forzar una sola línea
+            ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+            maxLength={50}
           />
-          <Animated.Image
-            source={require("../assets/images/Login/Field.png")}
-            style={[styles.fieldregister3, toRegisterAnim]}
-          />
-          <Animated.View style={[styles.input1Register, toRegisterAnim]}>
-            <TextInput
-              placeholder="Enter Username"
-              placeholderTextColor="#aaa"
-              value={username}
-              onChangeText={setUsername}
-              style={styles.input2}
-            />
-          </Animated.View>
 
-          <Animated.View style={[styles.input2Register, toRegisterAnim]}>
-            <TextInput
-              placeholder="Enter your email"
-              placeholderTextColor="#aaa"
-              secureTextEntry
-              value={email}
-              onChangeText={setPassword}
-              style={styles.input2}
-            />
-          </Animated.View>
+          {/* Mostrar mensaje de error si el correo no es válido
+          {emailError ? (
+            <Text style={styles.errorText}>{emailError}</Text>
+          ) : null} */}
+        </Animated.View>
+        <Animated.Image
+          source={require("../assets/images/Login/Field.png")}
+          style={[styles.fieldlogin1, BookLoginAnim]}
+        />
+        <Animated.View style={[styles.input2Login, BookLoginAnim]}>
+          <TextInput
+            placeholder="Enter Password"
+            placeholderTextColor="#aaa"
+            value={password}
+            onChangeText={validatePassword} // Valida la contraseña en cada cambio
+            secureTextEntry={true} // Ocultar el texto
+            style={styles.input2}
+            multiline={false}
+            scrollEnabled={false}
+          />
+          {/* Mostrar mensaje de error si la contraseña no es válida
+          {passwordError ? (
+            <Text style={styles.errorTextPassword}>{passwordError}</Text>
+          ) : null} */}
+        </Animated.View>
+        <Animated.Image
+          source={require("../assets/images/Login/Field.png")}
+          style={[styles.fieldlogin2, BookLoginAnim]}
+        />
+        {/* ASSETS DE REGISTER */}
+        <Animated.Image
+          source={require("../assets/images/Login/RegisterTitle.png")}
+          style={[styles.registertitle, toRegisterAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/Field.png")}
+          style={[styles.fieldregister1, toRegisterAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/Field.png")}
+          style={[styles.fieldregister2, toRegisterAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/Field.png")}
+          style={[styles.fieldregister3, toRegisterAnim]}
+        />
+        <Animated.View style={[styles.input1Register, toRegisterAnim]}>
+          <TextInput
+            placeholder="Enter Username"
+            placeholderTextColor="#aaa"
+            value={username}
+            onChangeText={(text) => setUsername(text.toLowerCase())} // Convierte a minúsculas
+            style={styles.input2}
+          />
+        </Animated.View>
+
+        <Animated.View style={[styles.input2Register, toRegisterAnim]}>
+          <TextInput
+            placeholder="Enter Email"
+            placeholderTextColor="#aaa"
+            value={email}
+            onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
+            keyboardType="email-address"
+            style={styles.input2}
+            multiline={false} // No permitir múltiples líneas
+            scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+            numberOfLines={1} // Forzar una sola línea
+            ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+            maxLength={50}
+          />
+        </Animated.View>
 
           <Animated.View style={[styles.input3Register, toRegisterAnim]}>
             <TextInput
@@ -782,25 +921,30 @@ export default function Index() {
             style={[styles.starsplit2, ButtonBackRegisterAnim]}
           />
 
-          {/* ASSETS DE FORGOT PASSWORD */}
-          <Animated.Image
-            source={require("../assets/images/Login/ForgotPasswordTitle.png")}
-            style={[styles.forgottitle, toForgotTitleAnim]}
+        {/* ASSETS DE FORGOT PASSWORD */}
+        <Animated.Image
+          source={require("../assets/images/Login/ForgotPasswordTitle.png")}
+          style={[styles.forgottitle, toForgotTitleAnim]}
+        />
+        <Animated.Image
+          source={require("../assets/images/Login/Field.png")}
+          style={[styles.fieldforgot1, toForgotAnim]}
+        />
+        <Animated.View style={[styles.input1Forgot, toForgotAnim]}>
+        <TextInput
+            placeholder="Enter Email"
+            placeholderTextColor="#aaa"
+            value={email}
+            onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
+            keyboardType="email-address"
+            style={styles.input2}
+            multiline={false} // No permitir múltiples líneas
+            scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+            numberOfLines={1} // Forzar una sola línea
+            ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+            maxLength={50}
           />
-          <Animated.Image
-            source={require("../assets/images/Login/Field.png")}
-            style={[styles.fieldforgot1, toForgotAnim]}
-          />
-          <Animated.View style={[styles.input1Forgot, toForgotAnim]}>
-            <TextInput
-              placeholder="Enter your email"
-              placeholderTextColor="#aaa"
-              secureTextEntry
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input2}
-            />
-          </Animated.View>
+        </Animated.View>
 
           <Animated.Image
             source={require("../assets/images/Login/Field.png")}

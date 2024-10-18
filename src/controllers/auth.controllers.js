@@ -1,4 +1,3 @@
-const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
 const jwt = require('jsonwebtoken'); 
 const nodemailer = require("nodemailer");
@@ -8,19 +7,39 @@ const { time } = require("console");
 
 
 const register = async (req, res) => {
-  const { email_user, password, username } = req.body;
-  console.log(req.body)
-
   try {
+    const { email_user, password, username } = req.body;
+
     // Verificar que los campos requeridos estén presentes
     if (!email_user || !password || !username) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    // Validación del formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email_user)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Validación de la contraseña (mínimo 8 caracteres, mayúsculas, minúsculas y caracteres especiales)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+    if (!/[a-z]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
+    }
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
+    }
+    if (!/[@$!%*?&]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one special character' });
+    }
+
     // Verificar si el usuario o el correo ya existen en la base de datos
     const existingEmail = await User.findOne({ email_user });
     if (existingEmail) {
-      return res.status(400).json({ message: 'Email or username already exists' });
+      return res.status(400).json({ message: 'Email already exists' });
     }
 
     const existingUser = await User.findOne({ username });
@@ -28,16 +47,11 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'Username already exists' });
     }
 
-    // Generar un "salt" para la contraseña
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds); // Encriptar la contraseña
-
     // Crear un nuevo usuario
     const newUser = new User({
       username,
       email_user,
-      password_user: hashedPassword,
-      // token y resetTokenExpires serán null o undefined por defecto
+      password_user: password,
     });
 
     // Guardar el usuario en la base de datos
@@ -53,59 +67,37 @@ const register = async (req, res) => {
 
 const createLogin = async (req, res) => {
   try {
-    const { email_user, password } = req.body;
-    console.log(email_user, password);
-
-    // Busca el usuario en la base de datos por el email
-    const user = await User.findOne({ email_user });
-    console.log(user);
-
-    if (user) {
-      // Compara la contraseña hasheada
-      const isPasswordValid = await bcrypt.compare(
-        password,
-        user.password_user
-      );
-
-      if (isPasswordValid) {
-        // Iniciar sesión y almacenar información en la sesión
-        req.session.isLoggedIn = true;
-        req.session.username = user.email_user;
-
-        // Nota: No es seguro almacenar la contraseña en la sesión.
-        const sessionId = req.session.id;
-        const personId = user._id;
-
-        console.log(`All good and your sessionId is ${sessionId}`);
-
-
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: "Login successful",
-            personId,
-          });
-        return;
+      const { email_user, password } = req.body;
+      console.log(email_user, password);
+      
+      // Busca el usuario en la base de datos por el email
+      const user = await User.findOne({ email_user });
+      console.log(user);
+      
+      if (user) {
+          // Compara la contraseña de forma simple (sin hashear)
+          if (password === user.password_user) {
+              // Iniciar sesión y almacenar información en la sesión
+              req.session.isLoggedIn = true;
+              req.session.username = user.email_user;
+              
+              const sessionId = req.session.id;
+              const personId = user._id;
+              console.log(`All good and your sessionId is ${sessionId}`);
+              
+              res.status(200).json({
+                  success: true,
+                  message: "Login successful",
+                  personId,
+              });
+              return;
+          }
       }
-    }
-
-    // Si no hay coincidencias o la contraseña es incorrecta
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-      }
-      res
-        .status(401)
-        .json({ success: false, message: "User or password are incorrect" });
-    });
+      res.status(401).json({ success: false, message: "Invalid credentials" });
   } catch (err) {
-    console.error("Error querying user data:", err);
-    res
-      .status(500)
-      .json({ success: false, message: "Error querying user data" });
-  }
-};
+      console.error('Error creating login:', err);
+      res.status(500).json({ success: false, message: "Server error" });
+  }}
 
 
 
@@ -214,4 +206,4 @@ module.exports = {
   resetPassword,
   checkResetToken
 
-};
+}
