@@ -1,6 +1,14 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  under: {
+    backgroundColor: "#cc0f1e",
+    position: "absolute",
+    width: "100%",
+    height: "20%",
+    bottom: -140,
+    zIndex: -7,
+  },
   // TEXT INPUTS DE PRIMERO ACOMPAÑADOS POR SU FIELD RESPECTIVO
   input2: {
     // Tamaño y Fuente de Letra de todos los Text Inputs
