@@ -258,10 +258,11 @@ export default function Index() {
     useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState("");
   const [secretCode, setSecretCode] = useState("");
-  const [responseMessage, setResponseMessage] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const validateEmail = (text) => {
     // Actualiza el estado del email antes de validar
@@ -352,7 +353,6 @@ export default function Index() {
     setEmail(""); // Borra el email
     setPassword(""); // Borra el password
 
-
     console.log("Register button pressed");
     loginbook2.value = withTiming(
       -800,
@@ -420,15 +420,13 @@ export default function Index() {
 
   const handleLoginButtonPress = async () => {
     console.log("Login button pressed");
-    fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-      fadeopacity.value = 1;
-    });
 
+    // Reproducir el sonido de click del botón
     await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
 
     // Datos de inicio de sesión (capturados de los inputs)
     const loginData = {
-      email_user: email, // El valor capturado del input de email
+      username: username, // El valor capturado del input de email
       password: password, // El valor capturado del input de password
     };
 
@@ -454,21 +452,20 @@ export default function Index() {
           data.message === "Invalid credentials"
             ? "WRONG EMAIL OR PASSWORD"
             : data.message || "Login failed. Please check your credentials.";
+
         console.error(errorMessage);
-
-        setErrorMessage(errorMessage);
+        setErrorMessage(errorMessage); // Mostrar mensaje de error en la UI
       } else {
-        console.log("Login successful");
-
         // Solo activar el fade y redirigir si el login es exitoso
+        console.log("Login successful");
         fadeopacity.value = withTiming(1, { duration: 300 });
         setTimeout(() => {
           router.replace("/home");
         }, 500);
       }
     } catch (error) {
-      // console.error("Error en la petición:", error);
-      // Manejar el error de conexión
+      console.error("Error en la petición:", error);
+      setErrorMessage("Login failed due to network error. Please try again."); // Manejar el error de conexión
     }
   };
 
@@ -523,7 +520,6 @@ export default function Index() {
           duration: 1300,
           easing: Easing.bezier(0.25, -0.25, 0.25, 1),
         });
-
       } else {
         let errorMessage;
 
@@ -571,82 +567,87 @@ export default function Index() {
     };
     console.log(dataRecover);
 
-   
-
     try {
-        const response = await fetch("https://backend-notes-moviles.onrender.com/resetPassword", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(dataRecover),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            console.log("Reset password email sent successfully", data);
-            forgotpassmove.value = withTiming(
-              900,
-              { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
-              () => {
-                  forgotpassmove.value = 900;
-              }
-          );
-        } else {
-            console.log(`Error: ${data.message || "Failed to send reset password email"}`);
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/resetPassword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataRecover),
         }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Reset password email sent successfully", data);
+        forgotpassmove.value = withTiming(
+          900,
+          { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+          () => {
+            forgotpassmove.value = 900;
+          }
+        );
+      } else {
+        console.log(
+          `Error: ${data.message || "Failed to send reset password email"}`
+        );
+      }
     } catch (error) {
-        console.error("Error connecting to the server:", error.message);
+      console.error("Error connecting to the server:", error.message);
     }
-};
+  };
 
+  const handleVerifyButtonPress = async () => {
+    console.log("Verify button pressed");
+    await playSound(require("../assets/images/SFX/Select.wav"));
+    setIsVerifyPressableActive(false);
+    setIsConfirmPressableActive(true);
 
-const handleVerifyButtonPress = async () => {
-  console.log("Verify button pressed");
-  await playSound(require("../assets/images/SFX/Select.wav"));
-  setIsVerifyPressableActive(false);
-  setIsConfirmPressableActive(true);
-
-  // Verifica que el resetCode tenga 6 caracteres
-  if (secretCode.length !== 6) {
+    // Verifica que el resetCode tenga 6 caracteres
+    if (secretCode.length !== 6) {
       console.error("Incomplete code");
       setIsVerifyPressableActive(true); // Reactivar el botón si el código es incorrecto
       setIsConfirmPressableActive(false);
       return;
-  }
+    }
 
-  const dataCheck = {
+    const dataCheck = {
       email_user: email, // El valor capturado del input de email
       resetCode: secretCode,
-  };
-  console.log(dataCheck);
+    };
+    console.log(dataCheck);
 
-  try {
-      const response = await fetch("https://backend-notes-moviles.onrender.com/checkReset", {
+    try {
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/checkReset",
+        {
           method: "POST",
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(dataCheck),
-      });
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
-          console.log("Verification successful", data);
-          forgotpassmove.value = withTiming(
-              1300,
-              { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
-              () => {
-                  forgotpassmove.value = 1300;
-              }
-          );
+        console.log("Verification successful", data);
+        forgotpassmove.value = withTiming(
+          1300,
+          { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+          () => {
+            forgotpassmove.value = 1300;
+          }
+        );
       } else {
-          console.log(`Error: ${data.message || "Failed to verify reset code"}`);
+        console.log(`Error: ${data.message || "Failed to verify reset code"}`);
       }
-  } catch (error) {
+    } catch (error) {
       console.error("Error connecting to the server:", error.message);
-  }
-};
+    }
+  };
 
   const handleConfirmButtonPress = async () => {
     console.log("Confirm button pressed");
@@ -873,10 +874,10 @@ const handleVerifyButtonPress = async () => {
           />
           <Animated.View style={[styles.input1Login, BookLoginAnim]}>
             <TextInput
-              placeholder="Enter Email"
+              placeholder="Enter Username"
               placeholderTextColor="#aaa"
-              value={email}
-              onChangeText={(text) => setEmail(text.toLowerCase())} // Convierte a minúsculas
+              value={username}
+              onChangeText={(text) => setUsername(text.toLowerCase())} // Convierte a minúsculas
               keyboardType="email-address"
               style={styles.input2}
               multiline={false} // No permitir múltiples líneas
@@ -1027,7 +1028,7 @@ const handleVerifyButtonPress = async () => {
             source={require("../assets/images/Login/Field.png")}
             style={[styles.fieldforgot2, toForgotAnim]}
           />
-           <Animated.View style={[styles.input2Forgot, toForgotAnim]}>
+          <Animated.View style={[styles.input2Forgot, toForgotAnim]}>
             <TextInput
               placeholder="Enter the code"
               placeholderTextColor="#aaa"
@@ -1046,10 +1047,41 @@ const handleVerifyButtonPress = async () => {
             source={require("../assets/images/Login/Field.png")}
             style={[styles.fieldforgot3, toForgotAnim]}
           />
+          <Animated.View style={[styles.input3Forgot, toForgotAnim]}>
+            <TextInput
+              placeholder="New Password"
+              placeholderTextColor="#aaa"
+              value={newPassword}
+              onChangeText={setNewPassword} // Convierte a minúsculas
+              keyboardType="email-address"
+              style={styles.input2}
+              multiline={false} // No permitir múltiples líneas
+              scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+              numberOfLines={1} // Forzar una sola línea
+              ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+              maxLength={10}
+            />
+          </Animated.View>
           <Animated.Image
             source={require("../assets/images/Login/Field.png")}
             style={[styles.fieldforgot4, toForgotAnim]}
           />
+
+          <Animated.View style={[styles.input3Forgot, toForgotAnim]}>
+            <TextInput
+              placeholder="New Password"
+              placeholderTextColor="#aaa"
+              value={newPassword}
+              onChangeText={setNewPassword} // Convierte a minúsculas
+              keyboardType="email-address"
+              style={styles.input2}
+              multiline={false} // No permitir múltiples líneas
+              scrollEnabled={false} // Evitar que el input se desplace horizontalmente
+              numberOfLines={1} // Forzar una sola línea
+              ellipsizeMode="tail" // Mostrar "..." al final si es muy largo
+              maxLength={10}
+            />
+          </Animated.View>
           <Pressable
             onPress={BackToLogin2ButtonPress}
             disabled={!isLoginBack2PressableActive}
