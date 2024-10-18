@@ -14,7 +14,7 @@ router.post('/register', register);
 router.post('/login', createLogin);
 router.post('/resetPassword', resetPassword);
 router.post('/checkReset', checkResetToken);
-router.post('./newPassword', savePassword);
+router.post('/newPassword', savePassword);
 
 // Notes routes
 router.get('/getNotes/:userId', Notes.getNotes.bind(Notes)); // Get notes for a specific user
