@@ -11,8 +11,8 @@ class Notes {
         title,
         description,
         user,
-        category: category || 'General',
-        priority: priority || 'Low',
+        category ,
+        priority,
         favorite: favorite || false,
       });
 
