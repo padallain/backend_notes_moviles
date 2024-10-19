@@ -1,21 +1,25 @@
-import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
-import React, { useState, useEffect } from "react";
+// app/home.jsx
+import { Text, View, StyleSheet, Image, ScrollView, Alert } from "react-native";
+import React, { useEffect } from "react";
+import { useSearchParams } from "expo-router";
 import Animated, {
-  Easing,
-  useAnimatedStyle,
   useSharedValue,
-  withRepeat,
   withTiming,
+  useAnimatedStyle,
 } from "react-native-reanimated";
+
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import AnimatedButton from "../components/AnimatedButton";
 import { playSound } from "../components/soundUtils";
+import { useLocalSearchParams } from "expo-router";
 
 export default function Home() {
+  const { name, personId } = useLocalSearchParams(); // Cambia a useLocalSearchParams
   const fadeopacity = useSharedValue(1);
 
   useEffect(() => {
+    console.log(`Welcome ${name}, your personId is ${personId}`);
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
     }, 500);
@@ -51,6 +55,55 @@ export default function Home() {
   const handleEraseAccountPress = async () => {
     console.log("Erase Account Button Pressed");
     await playSound(require("../assets/images/SFX/Delete.wav"));
+
+    const dataDelete = {
+      username: name, // El valor capturado del input de email
+      
+    };
+
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete your account?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const response = await fetch(
+                "https://backend-notes-moviles.onrender.com/deleteUser",
+                {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(dataDelete), // Ajusta el email según tu lógica
+                }
+              );
+
+              if (response.ok) {
+                console.log("Account deleted successfully");
+                fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+                  fadeopacity.value = 1;
+                });
+                setTimeout(() => {
+                  router.navigate("/");
+                }, 500);
+              } else {
+                console.log("Failed to delete account");
+              }
+            } catch (error) {
+              console.error("Error connecting to the server:", error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleDelCategoryPress = async () => {

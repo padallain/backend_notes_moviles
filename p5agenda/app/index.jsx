@@ -11,6 +11,7 @@ import Animated, {
 import { router, SplashScreen } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { playSound } from "../components/soundUtils";
+import { useRouter } from 'expo-router';
 import styles from "./indexstyles";
 
 SplashScreen.preventAutoHideAsync();
@@ -465,7 +466,10 @@ export default function Index() {
         console.log("Login successful");
         fadeopacity.value = withTiming(1, { duration: 300 });
         setTimeout(() => {
-          router.replace("/home");
+          router.push({
+            pathname: '/home',
+            params: { name: username, personId: data.personId }  // <-- Agrega personId aquí
+          });
         }, 500);
       }
     } catch (error) {
