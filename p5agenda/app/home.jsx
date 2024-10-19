@@ -130,7 +130,10 @@ export default function Home() {
   const Category = ({ id, name }) => (
     <View style={homestyles.catItemContainer}>
       <Text
-        style={homestyles.catTextitle}
+        style={[
+          homestyles.catTextitle,
+          selectedCategory === id && homestyles.selectedCatTextitle,
+        ]}
         ellipsizeMode="tail"
         numberOfLines={1}
       >
@@ -138,13 +141,19 @@ export default function Home() {
       </Text>
       <Image
         source={require("../assets/images/Home/CategoryNotch.png")}
-        style={homestyles.catNotch}
+        style={[
+          homestyles.catNotch,
+          selectedCategory === id && homestyles.selectedCatNotch,
+        ]}
       />
       <AnimatedButton
         onPress={() => handleCategoryPress(id)}
         source={imageMapCategory[id]}
         pressStyle={homestyles.catPressable}
-        style={homestyles.cat}
+        style={[
+          homestyles.cat,
+          selectedCategory === id && homestyles.selectedCat,
+        ]}
       />
     </View>
   );
@@ -386,6 +395,21 @@ homestyles = StyleSheet.create({
     width: 60,
     height: 60,
     zIndex: 4,
+  },
+  selectedCat: {
+    top: -30,
+    left: -7,
+    width: 78,
+    height: 78,
+  },
+  selectedCatNotch: {
+    top: -17,
+    width: 100,
+    height: 55,
+  },
+  selectedCatTextitle: {
+    top: 22,
+    fontSize: 16,
   },
   listContainer: {
     flex: 1,

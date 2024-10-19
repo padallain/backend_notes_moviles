@@ -11,7 +11,7 @@ import Animated, {
 import { router, SplashScreen } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { playSound } from "../components/soundUtils";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
 import styles from "./indexstyles";
 
 SplashScreen.preventAutoHideAsync();
@@ -89,17 +89,17 @@ export default function Index() {
     loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
     loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
     setTimeout(() => {
-      // (async () => {
-      //   const sound = await playSound(
-      //     require("../assets/images/SFX/Music.mp3"),
-      //     {
-      //       shouldPlay: true,
-      //       isLooping: true,
-      //       volume: 0.4,
-      //     }
-      //   );
-      //   setSound(sound);
-      // })();
+      (async () => {
+        const sound = await playSound(
+          require("../assets/images/SFX/Music.mp3"),
+          {
+            shouldPlay: true,
+            isLooping: true,
+            volume: 0.4,
+          }
+        );
+        setSound(sound);
+      })();
       setPressableDisabled(false);
     }, delay3);
 
@@ -294,10 +294,10 @@ export default function Index() {
   };
 
   const handlePress = async () => {
-    // await playSound(require("../assets/images/SFX/Start.wav"));
-    // setTimeout(async () => {
-    //   await playSound(require("../assets/images/SFX/Start Alright.wav"));
-    // }, 200);
+    await playSound(require("../assets/images/SFX/Start.wav"));
+    setTimeout(async () => {
+      await playSound(require("../assets/images/SFX/Start Alright.wav"));
+    }, 200);
     console.log("Tap To Begin Pressed");
     setPressableDisabled(true);
     setIsRegisterPressableActive(true);
