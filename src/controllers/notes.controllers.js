@@ -30,7 +30,7 @@ class Notes {
       const { userId } = req.params;
       const notes = await Note.find({ user: userId });
       const noteId = note._id;
-      res.status(200).json(notes,noteId);
+      res.status(200).json(notes.noteId);
     } catch (error) {
       console.error("Error fetching notes:", error);
       res.status(500).json({ message: "Error fetching notes", error: error.message });
