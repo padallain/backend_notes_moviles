@@ -1,12 +1,12 @@
-import { Text, View, StyleSheet, Image, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, Image, FlatList, Alert } from "react-native";
+import React, { useEffect } from "react";
+import { useSearchParams } from "expo-router";
 import Animated, {
-  Easing,
-  useAnimatedStyle,
   useSharedValue,
-  withRepeat,
   withTiming,
+  useAnimatedStyle,
 } from "react-native-reanimated";
+
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import AnimatedButton from "../components/AnimatedButton";
@@ -96,8 +96,10 @@ const getCategoryNameById = (categoryId) => {
   const category = Categories.find((cat) => cat.id === categoryId);
   return category ? category.name : "Unknown Category";
 };
+import { useLocalSearchParams } from "expo-router";
 
 export default function Home() {
+  const { name, personId } = useLocalSearchParams(); // Cambia a useLocalSearchParams
   const fadeopacity = useSharedValue(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filteredCards, setFilteredCards] = useState(Cards);
@@ -180,9 +182,33 @@ export default function Home() {
   }, [filteredCards]);
 
   useEffect(() => {
+    console.log(`Welcome ${name}, your personId is ${personId}`);
+
+    const fetchNotes = async () => {
+      const url = `https://backend-notes-moviles.onrender.com/getNotes/${personId}`;
+      try {
+          const response = await fetch(url, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+
+          const data = await response.json();
+          console.log('Notes:', data);
+      } catch (error) {
+          console.error('Error fetching notes:', error);
+      }
+  };
+
+  fetchNotes();
+    
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
     }, 500);
+
+
+
   }, []);
 
   useFocusEffect(
