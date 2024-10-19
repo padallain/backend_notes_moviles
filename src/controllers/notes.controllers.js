@@ -4,25 +4,36 @@ class Notes {
   // Create a new note
   async createNote(req, res) {
     try {
-      const { title, description, category, user, priority, favorite } = req.body;
+        const { title, description, category, user, priority, favorite } = req.body;
 
-      console.log(req.body)
-      const newNote = new Note({
-        title,
-        description,
-        user,
-        category: category || 'General',
-        priority: priority || 'Low',
-        favorite: favorite || false,
-      });
+        // Validar que el título y la descripción tengan al menos un carácter
+        if (!title || title.length < 1) {
+            return res.status(400).json({ message: "Title is required and must be at least 1 character long." });
+        }
 
-      const savedNote = await newNote.save();
-      res.status(201).json({ message: "Note created successfully", note: savedNote });
+        if (!description || description.length < 1) {
+            return res.status(400).json({ message: "Description is required and must be at least 1 character long." });
+        }
+
+        console.log(req.body);
+
+        const newNote = new Note({
+            title,
+            description,
+            user,
+            category: category || 'General',
+            priority: priority || 'Low',
+            favorite: favorite || false,
+        });
+
+        const savedNote = await newNote.save();
+        res.status(201).json({ message: "Note created successfully", note: savedNote });
     } catch (error) {
-      console.error("Error creating note:", error);
-      res.status(500).json({ message: "Error creating note", error: error.message });
+        console.error("Error creating note:", error);
+        res.status(500).json({ message: "Error creating note", error: error.message });
     }
-  }
+}
+
 
   // Get all notes for a specific user
   async getNotes(req, res) {

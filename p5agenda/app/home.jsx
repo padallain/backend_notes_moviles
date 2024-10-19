@@ -141,7 +141,10 @@ export default function Home() {
       fadeopacity.value = 1;
     });
     setTimeout(() => {
-      router.push("/note");
+      router.push({
+        pathname: '/note',
+        params: { personId: data.personId }  // <-- Agrega personId aquí
+      });
     }, 500);
   };
 

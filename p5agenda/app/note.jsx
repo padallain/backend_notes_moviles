@@ -21,8 +21,10 @@ import { router } from "expo-router";
 import AnimatedButton from "../components/AnimatedButton";
 import { playSound } from "../components/soundUtils";
 import { Colors } from "../constants/Colors";
+import { useLocalSearchParams } from "expo-router";
 
 export default function Note() {
+  const { personId } = useLocalSearchParams();
   const fadeopacity = useSharedValue(1);
   let [notetitle, setNoteTitle] = useState("Note 1");
   let [notedesc, setNoteDesc] = useState("");
