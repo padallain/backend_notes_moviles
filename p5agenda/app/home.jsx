@@ -1,6 +1,5 @@
 import { Text, View, StyleSheet, Image, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
 import Animated, {
   Easing,
   useSharedValue,
@@ -9,38 +8,10 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useFocusEffect } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import AnimatedButton from "../components/AnimatedButton";
 import { playSound } from "../components/soundUtils";
 import { imageMapCard, imageMapCategory } from "../components/imageMaps";
-
-const Cards = [
-  {
-    id: 1,
-    name: "Hoy no se duerme",
-    categoryId: 0,
-  },
-  {
-    id: 2,
-    name: "Hoy se celebra",
-    categoryId: 2,
-  },
-  {
-    id: 3,
-    name: "Hoy se come",
-    categoryId: 4,
-  },
-  {
-    id: 4,
-    name: "Voy por ti papadio",
-    categoryId: 6,
-  },
-  {
-    id: 5,
-    name: "The Boy",
-    categoryId: 8,
-  },
-];
 
 const Categories = [
   {
@@ -98,14 +69,17 @@ const getCategoryNameById = (categoryId) => {
   return category ? category.name : "Unknown Category";
 };
 
+export { getCategoryNameById };
+
 export default function Home() {
   const { name, personId } = useLocalSearchParams();
   const fadeopacity = useSharedValue(1);
   const [selectedCategory, setSelectedCategory] = useState(11);
-  const [filteredCards, setFilteredCards] = useState(Cards);
+  const [filteredCards, setFilteredCards] = useState([]);
+  const [cards, setCards] = useState([]);
   const opacity = useSharedValue(0);
 
-  const Item = ({ id, name, categoryId }) => (
+  const Item = ({ id, name, categoryId, description, priority, favorite }) => (
     <View style={homestyles.itemContainer}>
       <Text style={homestyles.textitle} ellipsizeMode="tail" numberOfLines={1}>
         {name}
@@ -119,7 +93,9 @@ export default function Home() {
       </Text>
       <Image source={imageMapCategory[categoryId]} style={homestyles.notecat} />
       <AnimatedButton
-        onPress={() => handleCardPress(id)}
+        onPress={() =>
+          handleCardPress(id, name, categoryId, description, priority, favorite)
+        }
         source={imageMapCard[id]}
         pressStyle={homestyles.cardpressable}
         style={homestyles.card}
@@ -158,10 +134,27 @@ export default function Home() {
     </View>
   );
 
-  const handleCardPress = async (id) => {
+  const handleCardPress = async (
+    id,
+    name,
+    categoryId,
+    description,
+    priority,
+    favorite
+  ) => {
     console.log("Card Pressed: " + id);
     await playSound(require("../assets/images/SFX/Battle UI.wav"));
-    router.push("/note");
+    router.push({
+      pathname: "/note",
+      params: {
+        id,
+        name,
+        categoryId,
+        description,
+        priority,
+        favorite,
+      },
+    });
   };
 
   const handleCategoryPress = async (id) => {
@@ -170,9 +163,20 @@ export default function Home() {
     setSelectedCategory(id);
 
     if (id === 11) {
-      setFilteredCards(Cards);
+      setFilteredCards(cards);
+    } else if (id === 10) {
+      try {
+        const response = await fetch(
+          `https://backend-notes-moviles.onrender.com/getNotes/${personId}`
+        );
+        const allNotes = response.data;
+        const favoriteNotes = allNotes.filter((note) => note.favorite === true);
+        setFilteredCards(favoriteNotes);
+      } catch (error) {
+        console.error("Failed to fetch favorite notes:", error);
+      }
     } else {
-      const newFilteredCards = Cards.filter((card) => card.categoryId === id);
+      const newFilteredCards = cards.filter((card) => card.categoryId === id);
       setFilteredCards(newFilteredCards);
     }
     animateCards();
@@ -189,6 +193,28 @@ export default function Home() {
   useEffect(() => {
     animateCards();
   }, [filteredCards]);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch(
+          `https://backend-notes-moviles.onrender.com/getNotes/${personId}`
+        );
+        const notes = await response.json();
+        const formattedCards = notes.map((note, index) => ({
+          id: index + 1,
+          name: note.title,
+          categoryId: parseInt(note.category, 10),
+        }));
+        setCards(formattedCards);
+        setFilteredCards(formattedCards);
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+      }
+    };
+
+    fetchNotes();
+  }, []);
 
   useEffect(() => {
     console.log(`Welcome ${name}, your personId is ${personId}`);
@@ -253,6 +279,46 @@ export default function Home() {
   const handleEraseAccountPress = async () => {
     console.log("Erase Account Button Pressed");
     await playSound(require("../assets/images/SFX/Delete.wav"));
+
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete your account?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const response = await fetch(
+                "https://backend-notes-moviles.onrender.com/deleteUser",
+                {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    email_user: "padcitoallain@gmail.com",
+                  }), // Ajusta el email según tu lógica
+                }
+              );
+
+              if (response.ok) {
+                console.log("Account deleted successfully");
+              } else {
+                console.log("Failed to delete account");
+              }
+            } catch (error) {
+              console.error("Error connecting to the server:", error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleNewNotePress = async () => {
@@ -338,7 +404,17 @@ export default function Home() {
   );
 }
 
-homestyles = StyleSheet.create({
+const homestyles = StyleSheet.create({
+  welcome: {
+    fontFamily: "P5-Font",
+    fontSize: 22,
+    color: "#000",
+    textAlign: "center",
+    zIndex: 7,
+    width: 400,
+    top: 55,
+    left: -5,
+  },
   notecat: {
     width: 19,
     height: 19,

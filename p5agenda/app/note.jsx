@@ -17,21 +17,40 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import AnimatedButton from "../components/AnimatedButton";
 import { playSound } from "../components/soundUtils";
 import { Colors } from "../constants/Colors";
+import { getCategoryNameById } from "./home";
+import { imageMapCategory, imageMapSilhouette } from "../components/imageMaps";
 
 export default function Note() {
+  const { id, name, categoryId, description, priority, favorite } =
+    useLocalSearchParams();
   const fadeopacity = useSharedValue(0);
-  let [notetitle, setNoteTitle] = useState("Note 1");
+  let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
+  const categoryName = getCategoryNameById(categoryId);
 
   useEffect(() => {
+    // Fetch note data from backend
+    const fetchNote = async () => {
+      try {
+        const response = await axios.get(`/api/notes/${id}`);
+        const note = response.data;
+        setNoteTitle(note.title);
+        setNoteDesc(note.description);
+      } catch (error) {
+        console.error("Failed to fetch note data:", error);
+      }
+    };
+
+    fetchNote();
+
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
     }, 500);
-  }, []);
+  }, [id]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -55,7 +74,7 @@ export default function Note() {
     // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
     //   fadeopacity.value = 1;
     // });
-    router.navigate("/home");
+    router.replace("/home");
     setTimeout(() => {}, 500);
   };
 
@@ -73,7 +92,7 @@ export default function Note() {
     <View
       style={{
         flex: 1,
-        backgroundColor: Colors.c0,
+        backgroundColor: Colors[categoryId],
       }}
     >
       <Animated.View
@@ -107,16 +126,10 @@ export default function Note() {
         pressStyle={notestyles.deletepressable}
         style={notestyles.delete}
       />
-      <Image
-        source={require("../assets/images/Note/Silhouettes/0.png")}
-        style={notestyles.bg}
-      />
+      <Image source={imageMapSilhouette[categoryName]} style={notestyles.bg} />
       <ScrollView style={notestyles.scrollview}>
-        <Image
-          source={require("../assets/images/Home/Categories/0.png")}
-          style={notestyles.cat}
-        />
-        <Text style={notestyles.textcat}>NOTES</Text>
+        <Image source={imageMapCategory[categoryName]} style={notestyles.cat} />
+        <Text style={notestyles.textcat}>{categoryName}</Text>
         <Image
           source={require("../assets/images/Note/NoteTitleCategory.png")}
           style={notestyles.title}
@@ -140,6 +153,7 @@ export default function Note() {
           value={notedesc}
           onChangeText={setNoteDesc}
           style={notestyles.noteinput}
+          maxLength={1000}
         />
         <Image
           source={require("../assets/images/Note/Padder.png")}
