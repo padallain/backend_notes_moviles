@@ -88,17 +88,17 @@ export default function Index() {
     loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
     loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
     setTimeout(() => {
-      (async () => {
-        const sound = await playSound(
-          require("../assets/images/SFX/Music.mp3"),
-          {
-            shouldPlay: true,
-            isLooping: true,
-            volume: 0.3,
-          }
-        );
-        setSound(sound);
-      })();
+      // (async () => {
+      //   const sound = await playSound(
+      //     require("../assets/images/SFX/Music.mp3"),
+      //     {
+      //       shouldPlay: true,
+      //       isLooping: true,
+      //       volume: 0.4,
+      //     }
+      //   );
+      //   setSound(sound);
+      // })();
       setPressableDisabled(false);
     }, delay3);
 
@@ -239,7 +239,7 @@ export default function Index() {
 
   const [isSound, setSound] = useState(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const [pressableDisabled, setPressableDisabled] = useState(false);
+  const [pressableDisabled, setPressableDisabled] = useState(true);
   const [isRegisterPressableActive, setIsRegisterPressableActive] =
     useState(false);
   const [isForgotPassPressableActive, setIsForgotPassPressableActive] =
@@ -293,10 +293,10 @@ export default function Index() {
   };
 
   const handlePress = async () => {
-    await playSound(require("../assets/images/SFX/Start.wav"));
-    setTimeout(async () => {
-      await playSound(require("../assets/images/SFX/Start Alright.wav"));
-    }, 200);
+    // await playSound(require("../assets/images/SFX/Start.wav"));
+    // setTimeout(async () => {
+    //   await playSound(require("../assets/images/SFX/Start Alright.wav"));
+    // }, 200);
     console.log("Tap To Begin Pressed");
     setPressableDisabled(true);
     setIsRegisterPressableActive(true);
@@ -437,41 +437,41 @@ export default function Index() {
 
     console.log(loginData);
 
-    try {
-      const response = await fetch(
-        "https://backend-notes-moviles.onrender.com/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
+    // try {
+    //   const response = await fetch(
+    //     "https://backend-notes-moviles.onrender.com/login",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify(loginData),
+    //     }
+    //   );
 
-      const data = await response.json();
+    //   const data = await response.json();
 
-      if (!response.ok) {
-        // Cambiar el mensaje de error si es "Invalid credentials"
-        const errorMessage =
-          data.message === "Invalid credentials"
-            ? "WRONG USERNAME OR PASSWORD"
-            : data.message || "Login failed. Please check your credentials.";
+    //   if (!response.ok) {
+    //     // Cambiar el mensaje de error si es "Invalid credentials"
+    //     const errorMessage =
+    //       data.message === "Invalid credentials"
+    //         ? "WRONG USERNAME OR PASSWORD"
+    //         : data.message || "Login failed. Please check your credentials.";
 
-        console.error(errorMessage);
-        setErrorMessage(errorMessage); // Mostrar mensaje de error en la UI
-      } else {
-        // Solo activar el fade y redirigir si el login es exitoso
-        console.log("Login successful");
-        fadeopacity.value = withTiming(1, { duration: 300 });
-        setTimeout(() => {
-          router.replace("/home");
-        }, 500);
-      }
-    } catch (error) {
-      console.error("Error en la petición:", error);
-      setErrorMessage("Login failed due to network error. Please try again."); // Manejar el error de conexión
-    }
+    //     console.error(errorMessage);
+    //     setErrorMessage(errorMessage); // Mostrar mensaje de error en la UI
+    //   } else {
+    //     // Solo activar el fade y redirigir si el login es exitoso
+    //     console.log("Login successful");
+    //     fadeopacity.value = withTiming(1, { duration: 300 });
+    //     setTimeout(() => {
+    //       router.replace("/home");
+    //     }, 500);
+    //   }
+    // } catch (error) {
+    //   console.error("Error en la petición:", error);
+    //   setErrorMessage("Login failed due to network error. Please try again."); // Manejar el error de conexión
+    // }
   };
 
   const handleRegisterButtonPress = async () => {

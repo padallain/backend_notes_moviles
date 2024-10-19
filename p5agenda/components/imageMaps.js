@@ -1,0 +1,51 @@
+const imageMapCard = {
+  1: require("../assets/images/TarotCards/1.png"),
+  2: require("../assets/images/TarotCards/2.png"),
+  3: require("../assets/images/TarotCards/3.png"),
+  4: require("../assets/images/TarotCards/4.png"),
+  5: require("../assets/images/TarotCards/5.png"),
+  6: require("../assets/images/TarotCards/6.png"),
+  7: require("../assets/images/TarotCards/7.png"),
+  8: require("../assets/images/TarotCards/8.png"),
+  9: require("../assets/images/TarotCards/9.png"),
+  10: require("../assets/images/TarotCards/10.png"),
+  11: require("../assets/images/TarotCards/11.png"),
+  12: require("../assets/images/TarotCards/12.png"),
+  13: require("../assets/images/TarotCards/13.png"),
+  14: require("../assets/images/TarotCards/14.png"),
+  15: require("../assets/images/TarotCards/15.png"),
+  16: require("../assets/images/TarotCards/16.png"),
+  17: require("../assets/images/TarotCards/17.png"),
+  18: require("../assets/images/TarotCards/18.png"),
+  19: require("../assets/images/TarotCards/19.png"),
+  20: require("../assets/images/TarotCards/20.png"),
+};
+
+const imageMapCategory = {
+  10: require("../assets/images/Home/Categories/Fav.png"),
+  11: require("../assets/images/Home/Categories/New.png"),
+  0: require("../assets/images/Home/Categories/0.png"),
+  1: require("../assets/images/Home/Categories/1.png"),
+  2: require("../assets/images/Home/Categories/2.png"),
+  3: require("../assets/images/Home/Categories/3.png"),
+  4: require("../assets/images/Home/Categories/4.png"),
+  5: require("../assets/images/Home/Categories/5.png"),
+  6: require("../assets/images/Home/Categories/6.png"),
+  7: require("../assets/images/Home/Categories/7.png"),
+  8: require("../assets/images/Home/Categories/9.png"),
+  9: require("../assets/images/Home/Categories/8.png"),
+};
+const imageMapSilhouette = {
+  0: require("../assets/images/Note/Silhouettes/0.png"),
+  1: require("../assets/images/Note/Silhouettes/1.png"),
+  2: require("../assets/images/Note/Silhouettes/2.png"),
+  3: require("../assets/images/Note/Silhouettes/3.png"),
+  4: require("../assets/images/Note/Silhouettes/4.png"),
+  5: require("../assets/images/Note/Silhouettes/5.png"),
+  6: require("../assets/images/Note/Silhouettes/6.png"),
+  7: require("../assets/images/Note/Silhouettes/7.png"),
+  8: require("../assets/images/Note/Silhouettes/9.png"),
+  9: require("../assets/images/Note/Silhouettes/8.png"),
+};
+
+export { imageMapCard, imageMapCategory, imageMapSilhouette };

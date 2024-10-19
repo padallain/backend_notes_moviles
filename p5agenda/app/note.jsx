@@ -23,7 +23,7 @@ import { playSound } from "../components/soundUtils";
 import { Colors } from "../constants/Colors";
 
 export default function Note() {
-  const fadeopacity = useSharedValue(1);
+  const fadeopacity = useSharedValue(0);
   let [notetitle, setNoteTitle] = useState("Note 1");
   let [notedesc, setNoteDesc] = useState("");
 
@@ -52,12 +52,11 @@ export default function Note() {
   const handleBack = async () => {
     console.log("Back from Note Button Pressed");
     await playSound(require("../assets/images/SFX/Back.wav"));
-    fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-      fadeopacity.value = 1;
-    });
-    setTimeout(() => {
-      router.navigate("/home");
-    }, 500);
+    // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+    //   fadeopacity.value = 1;
+    // });
+    router.navigate("/home");
+    setTimeout(() => {}, 500);
   };
 
   const handleFav = async () => {
@@ -74,7 +73,7 @@ export default function Note() {
     <View
       style={{
         flex: 1,
-        backgroundColor: Colors.c1,
+        backgroundColor: Colors.c0,
       }}
     >
       <Animated.View
@@ -109,12 +108,12 @@ export default function Note() {
         style={notestyles.delete}
       />
       <Image
-        source={require("../assets/images/Note/Silhouettes/1.png")}
+        source={require("../assets/images/Note/Silhouettes/0.png")}
         style={notestyles.bg}
       />
       <ScrollView style={notestyles.scrollview}>
         <Image
-          source={require("../assets/images/Home/Categories/1.png")}
+          source={require("../assets/images/Home/Categories/0.png")}
           style={notestyles.cat}
         />
         <Text style={notestyles.textcat}>NOTES</Text>

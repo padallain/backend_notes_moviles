@@ -7,7 +7,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 const AnimatedButton = ({ onPress, source, pressStyle, style }) => {
-    const scale = useSharedValue(1);
+  const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -16,13 +16,13 @@ const AnimatedButton = ({ onPress, source, pressStyle, style }) => {
   });
 
   const handlePressIn = () => {
-    scale.value = withTiming(1.3, { duration: 200 }, () => {
-      scale.value = 1.3;
+    scale.value = withTiming(1.25, { duration: 150 }, () => {
+      scale.value = 1.25;
     });
   };
 
   const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 200 }, () => {
+    scale.value = withTiming(1, { duration: 150 }, () => {
       scale.value = 1;
     });
   };
@@ -38,9 +38,5 @@ const AnimatedButton = ({ onPress, source, pressStyle, style }) => {
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  // Define any common styles here if needed
-});
 
 export default AnimatedButton;
