@@ -264,6 +264,8 @@ export default function Index() {
   const [email, setEmail] = useState("");
   const [secretCode, setSecretCode] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   const validateEmail = (text) => {
     // Actualiza el estado del email antes de validar
