@@ -2,7 +2,7 @@ const Note = require("../models/note.model");
 
 class Notes {
   // Create a new note
-  async createNote(req, res) {
+  aasync createNote(req, res) {
     try {
         const { title, description, category, user, priority, favorite } = req.body;
 
@@ -15,14 +15,20 @@ class Notes {
             return res.status(400).json({ message: "Description is required and must be at least 1 character long." });
         }
 
+        // Validar que priority esté en el rango de 1 a 5
+        const validPriorities = [1, 2, 3, 4, 5];
+        if (!validPriorities.includes(priority)) {
+            return res.status(400).json({ message: "Priority must be a number between 1 and 5." });
+        }
+
         console.log(req.body);
 
         const newNote = new Note({
             title,
             description,
             user,
-            category: category || 'General',
-            priority: priority || 'Low',
+            category: category || 'Notes',
+            priority: priority,
             favorite: favorite || false,
         });
 
@@ -33,6 +39,7 @@ class Notes {
         res.status(500).json({ message: "Error creating note", error: error.message });
     }
 }
+
 
 
   // Get all notes for a specific user
