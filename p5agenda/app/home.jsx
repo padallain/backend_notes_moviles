@@ -99,9 +99,9 @@ const getCategoryNameById = (categoryId) => {
 };
 
 export default function Home() {
-  const { name, personId } = useLocalSearchParams(); // Cambia a useLocalSearchParams
+  const { name, personId } = useLocalSearchParams();
   const fadeopacity = useSharedValue(1);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(11);
   const [filteredCards, setFilteredCards] = useState(Cards);
   const opacity = useSharedValue(0);
 
