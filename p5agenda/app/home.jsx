@@ -20,9 +20,32 @@ export default function Home() {
 
   useEffect(() => {
     console.log(`Welcome ${name}, your personId is ${personId}`);
+
+    const fetchNotes = async () => {
+      const url = `https://backend-notes-moviles.onrender.com/getNotes/${personId}`;
+      try {
+          const response = await fetch(url, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+
+          const data = await response.json();
+          console.log('Notes:', data);
+      } catch (error) {
+          console.error('Error fetching notes:', error);
+      }
+  };
+
+  fetchNotes();
+    
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
     }, 500);
+
+
+
   }, []);
 
   useFocusEffect(
