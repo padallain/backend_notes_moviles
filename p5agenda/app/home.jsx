@@ -1,7 +1,8 @@
 import { Text, View, StyleSheet, Image, FlatList, Alert } from "react-native";
-import React, { useEffect } from "react";
-import { useSearchParams } from "expo-router";
+import React, { useState, useEffect } from "react";
+import { useLocalSearchParams } from "expo-router";
 import Animated, {
+  Easing,
   useSharedValue,
   withTiming,
   useAnimatedStyle,
@@ -96,7 +97,6 @@ const getCategoryNameById = (categoryId) => {
   const category = Categories.find((cat) => cat.id === categoryId);
   return category ? category.name : "Unknown Category";
 };
-import { useLocalSearchParams } from "expo-router";
 
 export default function Home() {
   const { name, personId } = useLocalSearchParams(); // Cambia a useLocalSearchParams
@@ -187,28 +187,25 @@ export default function Home() {
     const fetchNotes = async () => {
       const url = `https://backend-notes-moviles.onrender.com/getNotes/${personId}`;
       try {
-          const response = await fetch(url, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-          });
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-          const data = await response.json();
-          console.log('Notes:', data);
+        const data = await response.json();
+        console.log("Notes:", data);
       } catch (error) {
-          console.error('Error fetching notes:', error);
+        console.error("Error fetching notes:", error);
       }
-  };
+    };
 
-  fetchNotes();
-    
+    fetchNotes();
+
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
     }, 500);
-
-
-
   }, []);
 
   useFocusEffect(
