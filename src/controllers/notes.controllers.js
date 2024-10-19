@@ -4,46 +4,25 @@ class Notes {
   // Create a new note
   async createNote(req, res) {
     try {
-        const { title, description, category, user, priority, favorite } = req.body;
+      const { title, description, category, user, priority, favorite } = req.body;
 
-        // Validar que el título y la descripción tengan al menos un carácter
-        if (!title || title.length < 1) {
-            return res.status(400).json({ message: "Title is required and must be at least 1 character long." });
-        }
+      console.log(req.body)
+      const newNote = new Note({
+        title,
+        description,
+        user,
+        category ,
+        priority,
+        favorite: favorite || false,
+      });
 
-        if (!description || description.length < 1) {
-            return res.status(400).json({ message: "Description is required and must be at least 1 character long." });
-        }
-
-        // Validar que category esté en el rango de 0 a 9
-        if (typeof category !== 'number' || category < 0 || category > 9) {
-            return res.status(400).json({ message: "Category must be a number between 0 and 9." });
-        }
-
-        // Validar que priority esté en el rango de 1 a 5
-        if (typeof priority !== 'number' || priority < 1 || priority > 5) {
-            return res.status(400).json({ message: "Priority must be a number between 1 and 5." });
-        }
-
-        console.log(req.body);
-
-        const newNote = new Note({
-            title,
-            description,
-            user,
-            category: category,
-            priority: priority,
-            favorite: favorite || false,
-        });
-
-        const savedNote = await newNote.save();
-        res.status(201).json({ message: "Note created successfully", note: savedNote });
+      const savedNote = await newNote.save();
+      res.status(201).json({ message: "Note created successfully", note: savedNote });
     } catch (error) {
-        console.error("Error creating note:", error);
-        res.status(500).json({ message: "Error creating note", error: error.message });
+      console.error("Error creating note:", error);
+      res.status(500).json({ message: "Error creating note", error: error.message });
     }
-}
-
+  }
 
   // Get all notes for a specific user
   async getNotes(req, res) {
