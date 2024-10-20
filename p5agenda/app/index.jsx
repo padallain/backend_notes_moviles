@@ -30,7 +30,7 @@ export default function Index() {
   const sv1 = useSharedValue(0);
   const sv2 = useSharedValue(0);
   const keyboardmove = useSharedValue(0);
-  const loadopacity = useSharedValue(1);
+  const loadopacity = useSharedValue(0);
   const loadopacity2 = useSharedValue(0);
   const opacity = useSharedValue(1);
   const fadeopacity = useSharedValue(0);
@@ -86,22 +86,22 @@ export default function Index() {
       true
     );
 
-    loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
-    loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
-    setTimeout(() => {
-      // (async () => {
-      //   const sound = await playSound(
-      //     require("../assets/images/SFX/Music.mp3"),
-      //     {
-      //       shouldPlay: true,
-      //       isLooping: true,
-      //       volume: 0.4,
-      //     }
-      //   );
-      //   setSound(sound);
-      // })();
-      setPressableDisabled(false);
-    }, delay3);
+    // loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
+    // loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
+    // setTimeout(() => {
+    //   (async () => {
+    //     const sound = await playSound(
+    //       require("../assets/images/SFX/Music.mp3"),
+    //       {
+    //         shouldPlay: true,
+    //         isLooping: true,
+    //         volume: 0.4,
+    //       }
+    //     );
+    //     setSound(sound);
+    //   })();
+    //   setPressableDisabled(false);
+    // }, delay3);
 
     return () => {
       keyboardDidShowListener.remove();
@@ -240,7 +240,7 @@ export default function Index() {
 
   const [isSound, setSound] = useState(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const [pressableDisabled, setPressableDisabled] = useState(true);
+  const [pressableDisabled, setPressableDisabled] = useState(false);
   const [isRegisterPressableActive, setIsRegisterPressableActive] =
     useState(false);
   const [isForgotPassPressableActive, setIsForgotPassPressableActive] =
@@ -467,8 +467,8 @@ export default function Index() {
         fadeopacity.value = withTiming(1, { duration: 300 });
         setTimeout(() => {
           router.push({
-            pathname: '/home',
-            params: { name: username, personId: data.personId }  // <-- Agrega personId aquí
+            pathname: "/home",
+            params: { name: username, personId: data.personId }, // <-- Agrega personId aquí
           });
         }, 500);
       }

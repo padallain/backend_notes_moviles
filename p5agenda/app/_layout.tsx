@@ -1,9 +1,11 @@
 import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
 import * as Font from "expo-font";
+import useDisableBackButton from "../components/useDisableBackButton";
 
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  useDisableBackButton();
 
   const loadFonts = async () => {
     await Font.loadAsync({

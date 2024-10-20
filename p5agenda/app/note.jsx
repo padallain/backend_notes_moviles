@@ -25,18 +25,20 @@ import { getCategoryNameById } from "./home";
 import { imageMapCategory, imageMapSilhouette } from "../components/imageMaps";
 
 export default function Note() {
-  const { id, name, categoryId, description, priority, favorite } =
+  const { personId, categoryId, favorite, originalIndex } =
     useLocalSearchParams();
+  const categoryIdInt = parseInt(categoryId);
   const fadeopacity = useSharedValue(0);
   let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
-  const categoryName = getCategoryNameById(categoryId);
+  const categoryName = getCategoryNameById(categoryIdInt);
 
   useEffect(() => {
-    // Fetch note data from backend
     const fetchNote = async () => {
       try {
-        const response = await axios.get(`/api/notes/${id}`);
+        const response = await fetch(
+          `https://backend-notes-moviles.onrender.com/getNotes/${personId}/${originalIndex}`
+        );
         const note = response.data;
         setNoteTitle(note.title);
         setNoteDesc(note.description);
@@ -50,7 +52,7 @@ export default function Note() {
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
     }, 500);
-  }, [id]);
+  }, [originalIndex]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -74,7 +76,7 @@ export default function Note() {
     // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
     //   fadeopacity.value = 1;
     // });
-    router.replace("/home");
+    router.navigate("/home");
     setTimeout(() => {}, 500);
   };
 
@@ -126,9 +128,9 @@ export default function Note() {
         pressStyle={notestyles.deletepressable}
         style={notestyles.delete}
       />
-      <Image source={imageMapSilhouette[categoryName]} style={notestyles.bg} />
+      <Image source={imageMapSilhouette[categoryId]} style={notestyles.bg} />
       <ScrollView style={notestyles.scrollview}>
-        <Image source={imageMapCategory[categoryName]} style={notestyles.cat} />
+        <Image source={imageMapCategory[categoryId]} style={notestyles.cat} />
         <Text style={notestyles.textcat}>{categoryName}</Text>
         <Image
           source={require("../assets/images/Note/NoteTitleCategory.png")}

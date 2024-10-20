@@ -79,29 +79,58 @@ export default function Home() {
   const [cards, setCards] = useState([]);
   const opacity = useSharedValue(0);
 
-  const Item = ({ id, name, categoryId, description, priority, favorite }) => (
-    <View style={homestyles.itemContainer}>
-      <Text style={homestyles.textitle} ellipsizeMode="tail" numberOfLines={1}>
-        {name}
-      </Text>
-      <Image
-        source={require("../assets/images/Home/FavNoteNotch.png")}
-        style={homestyles.cardnotch}
-      />
-      <Text style={homestyles.textcat} ellipsizeMode="tail" numberOfLines={1}>
-        {getCategoryNameById(categoryId)}
-      </Text>
-      <Image source={imageMapCategory[categoryId]} style={homestyles.notecat} />
-      <AnimatedButton
-        onPress={() =>
-          handleCardPress(id, name, categoryId, description, priority, favorite)
-        }
-        source={imageMapCard[id]}
-        pressStyle={homestyles.cardpressable}
-        style={homestyles.card}
-      />
-    </View>
-  );
+  const Item = ({
+    id,
+    name,
+    categoryId,
+    priority,
+    favorite,
+    originalIndex,
+  }) => {
+    return (
+      <View style={homestyles.itemContainer}>
+        <Text
+          style={homestyles.textitle}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
+          {name}
+        </Text>
+        <Image
+          source={require("../assets/images/Home/FavNoteNotch.png")}
+          style={homestyles.cardnotch}
+        />
+        <Text style={homestyles.textcat} ellipsizeMode="tail" numberOfLines={1}>
+          {getCategoryNameById(categoryId)}
+        </Text>
+        <Image
+          source={imageMapCategory[categoryId]}
+          style={homestyles.notecat}
+        />
+        <AnimatedButton
+          onPress={() =>
+            handleCardPress(
+              id,
+              name,
+              categoryId,
+              priority,
+              favorite,
+              originalIndex
+            )
+          }
+          source={imageMapCard[id]}
+          pressStyle={homestyles.cardpressable}
+          style={homestyles.card}
+        />
+        {favorite && (
+          <Image
+            source={require("../assets/images/Home/isFav.png")}
+            style={homestyles.isfav}
+          />
+        )}
+      </View>
+    );
+  };
 
   const Category = ({ id, name }) => (
     <View style={homestyles.catItemContainer}>
@@ -138,21 +167,18 @@ export default function Home() {
     id,
     name,
     categoryId,
-    description,
     priority,
-    favorite
+    favorite,
+    originalIndex
   ) => {
-    console.log("Card Pressed: " + id);
     await playSound(require("../assets/images/SFX/Battle UI.wav"));
     router.push({
       pathname: "/note",
       params: {
-        id,
-        name,
+        personId,
         categoryId,
-        description,
-        priority,
         favorite,
+        originalIndex,
       },
     });
   };
@@ -165,16 +191,8 @@ export default function Home() {
     if (id === 11) {
       setFilteredCards(cards);
     } else if (id === 10) {
-      try {
-        const response = await fetch(
-          `https://backend-notes-moviles.onrender.com/getNotes/${personId}`
-        );
-        const allNotes = response.data;
-        const favoriteNotes = allNotes.filter((note) => note.favorite === true);
-        setFilteredCards(favoriteNotes);
-      } catch (error) {
-        console.error("Failed to fetch favorite notes:", error);
-      }
+      const favoriteNotes = cards.filter((card) => card.favorite === true);
+      setFilteredCards(favoriteNotes);
     } else {
       const newFilteredCards = cards.filter((card) => card.categoryId === id);
       setFilteredCards(newFilteredCards);
@@ -203,8 +221,11 @@ export default function Home() {
         const notes = await response.json();
         const formattedCards = notes.map((note, index) => ({
           id: index + 1,
+          originalIndex: note._id,
           name: note.title,
           categoryId: parseInt(note.category, 10),
+          favorite: note.favorite,
+          priority: note.priority,
         }));
         setCards(formattedCards);
         setFilteredCards(formattedCards);
@@ -214,7 +235,7 @@ export default function Home() {
     };
 
     fetchNotes();
-  }, []);
+  }, [personId]);
 
   useEffect(() => {
     console.log(`Welcome ${name}, your personId is ${personId}`);
@@ -392,6 +413,9 @@ export default function Home() {
                 id={item.id}
                 name={item.name}
                 categoryId={item.categoryId}
+                priority={item.priority}
+                favorite={item.favorite}
+                originalIndex={item.originalIndex}
               />
             )}
             keyExtractor={(item) => item.id.toString()}
@@ -405,6 +429,14 @@ export default function Home() {
 }
 
 const homestyles = StyleSheet.create({
+  isfav: {
+    position: "relative",
+    width: 45,
+    height: 45,
+    bottom: 60,
+    left: -60,
+    zIndex: 9,
+  },
   welcome: {
     fontFamily: "P5-Font",
     fontSize: 22,
@@ -489,11 +521,12 @@ const homestyles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    marginTop: -35,
+    marginTop: -45,
+    marginBottom: 0,
   },
   itemContainer: {
     flex: 1,
-    margin: 10,
+    marginTop: 18,
     alignItems: "center",
   },
   row: {
