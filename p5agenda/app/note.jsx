@@ -35,20 +35,23 @@ export default function Note() {
   const categoryName = getCategoryNameById(categoryIdInt);
 
   useEffect(() => {
-      // const fetchNote = async () => {
-      //   try {
-      //     const response = await fetch(
-      //       `https://backend-notes-moviles.onrender.com/getNotes/${personId}/${originalIndex}`
-      //     );
-      //     const note = response.data;
-      //     setNoteTitle(note.title);
-      //     setNoteDesc(note.description);
-      //   } catch (error) {
-      //     console.error("Failed to fetch note data:", error);
-      //   }
-      // };
+    console.log(originalIndex); // Debugging: Check originalIndex value
+    const fetchNote = async () => {
+      try {
+        const response = await fetch(
+          `https://backend-notes-moviles.onrender.com/getOneNote/${originalIndex}`
+        );
+        const note = await response.json();
+        console.log(note); // Debugging: Check the fetched note
+        setNoteTitle(note.title);
+        setNoteDesc(note.description);
+        console.log(notetitle, notedesc); // Debugging: Check state updates
+      } catch (error) {
+        console.error('Failed to fetch note data:', error);
+      }
+    };
 
-    // fetchNote();
+    fetchNote();
 
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
