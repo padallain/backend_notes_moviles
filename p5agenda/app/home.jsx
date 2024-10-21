@@ -64,6 +64,89 @@ const Categories = [
   },
 ];
 
+const NewNoteSelect = [
+  {
+    id: 1,
+    name: "New Note I",
+  },
+  {
+    id: 2,
+    name: "New Note II",
+  },
+  {
+    id: 3,
+    name: "New Note III",
+  },
+  {
+    id: 4,
+    name: "New Note IV",
+  },
+  {
+    id: 5,
+    name: "New Note V",
+  },
+  {
+    id: 6,
+    name: "New Note VI",
+  },
+  {
+    id: 7,
+    name: "New Note VII",
+  },
+  {
+    id: 8,
+    name: "New Note VIII",
+  },
+  {
+    id: 9,
+    name: "New Note IX",
+  },
+  {
+    id: 10,
+    name: "New Note X",
+  },
+  {
+    id: 11,
+    name: "New Note XI",
+  },
+  {
+    id: 12,
+    name: "New Note XII",
+  },
+  {
+    id: 13,
+    name: "New Note XIII",
+  },
+  {
+    id: 14,
+    name: "New Note XIV",
+  },
+  {
+    id: 15,
+    name: "New Note XV",
+  },
+  {
+    id: 16,
+    name: "New Note XVI",
+  },
+  {
+    id: 17,
+    name: "New Note XVII",
+  },
+  {
+    id: 18,
+    name: "New Note XVIII",
+  },
+  {
+    id: 19,
+    name: "New Note XIX",
+  },
+  {
+    id: 20,
+    name: "New Note XX",
+  },
+];
+
 const getCategoryNameById = (categoryId) => {
   const category = Categories.find((cat) => cat.id === categoryId);
   return category ? category.name : "Unknown Category";
