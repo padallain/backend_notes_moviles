@@ -1,11 +1,14 @@
 import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import * as Font from "expo-font";
 import useDisableBackButton from "../components/useDisableBackButton";
 
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  useDisableBackButton();
+  if (Platform.OS === "android") {
+    useDisableBackButton();
+  }
 
   const loadFonts = async () => {
     await Font.loadAsync({
