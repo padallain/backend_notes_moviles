@@ -7,6 +7,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
@@ -34,20 +35,20 @@ export default function Note() {
   const categoryName = getCategoryNameById(categoryIdInt);
 
   useEffect(() => {
-    const fetchNote = async () => {
-      try {
-        const response = await fetch(
-          `https://backend-notes-moviles.onrender.com/getNotes/${personId}/${originalIndex}`
-        );
-        const note = response.data;
-        setNoteTitle(note.title);
-        setNoteDesc(note.description);
-      } catch (error) {
-        console.error("Failed to fetch note data:", error);
-      }
-    };
+      // const fetchNote = async () => {
+      //   try {
+      //     const response = await fetch(
+      //       `https://backend-notes-moviles.onrender.com/getNotes/${personId}/${originalIndex}`
+      //     );
+      //     const note = response.data;
+      //     setNoteTitle(note.title);
+      //     setNoteDesc(note.description);
+      //   } catch (error) {
+      //     console.error("Failed to fetch note data:", error);
+      //   }
+      // };
 
-    fetchNote();
+    // fetchNote();
 
     setTimeout(() => {
       fadeopacity.value = withTiming(0, { duration: 500 });
@@ -88,6 +89,46 @@ export default function Note() {
   const handleDelete = async () => {
     console.log("Delete Note Button Pressed");
     await playSound(require("../assets/images/SFX/Delete.wav"));
+  
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this note?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const response = await fetch(
+                `https://backend-notes-moviles.onrender.com/deleteNote/${originalIndex}`,
+                {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              const noteMessage = await response.json();
+              console.log(noteMessage);
+              if (response.ok) {
+                console.log("Note deleted successfully");
+                // Navigate back to home or update the state to remove the deleted note
+                router.navigate("/home");
+              } else {
+                console.error("Failed to delete note");
+              }
+            } catch (error) {
+              console.error("Failed to fetch note data:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (

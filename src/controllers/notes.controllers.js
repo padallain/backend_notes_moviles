@@ -24,6 +24,22 @@ class Notes {
     }
   }
 
+  async getOneNote(req, res) {
+    try {
+      const { noteId } = req.params;
+      const note = await Note.findById(noteId);
+
+      if (!note) {
+        return res.status(404).json({ message: "Note not found" });
+      }
+
+      res.status(200).json(note);
+    } catch (error) {
+      console.error("Error fetching note:", error);
+      res.status(500).json({ message: "Error fetching note", error: error.message });
+    }
+  }
+
   // Get all notes for a specific user
   async getNotes(req, res) {
     try {
