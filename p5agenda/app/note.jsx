@@ -77,13 +77,39 @@ export default function Note() {
   const handleBack = async () => {
     console.log("Back from Note Button Pressed");
     await playSound(require("../assets/images/SFX/Back.wav"));
-    // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-    //   fadeopacity.value = 1;
-    // });
-    router.navigate("/home");
-    setTimeout(() => {}, 500);
-
+  
+    // Fetch request to update the note
+    try {
+      const response = await fetch(`https://backend-notes-moviles.onrender.com/updateNote/${originalIndex}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Include the fields you want to update
+          title: notetitle,
+          description: notedesc,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+      console.log('Note updated successfully:', data);
+    } catch (error) {
+      console.error('Error updating note:', error);
+    }
+  
+    setTimeout(() => {
+      router.navigate({
+        pathname: "/home",
+        params: { personId },
+      });
+    }, 500);
   };
+
   const handleFav = async () => {
     console.log("Toggle Favorite Button Pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
@@ -120,7 +146,12 @@ export default function Note() {
               if (response.ok) {
                 console.log("Note deleted successfully");
                 // Navigate back to home or update the state to remove the deleted note
-                router.navigate("/home");
+                setTimeout(() => {
+                  router.navigate({
+                    pathname: "/home",
+                    params: { personId },
+                  });
+                }, 500);
               } else {
                 console.error("Failed to delete note");
               }
