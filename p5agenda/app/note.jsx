@@ -5,9 +5,7 @@ import {
   Image,
   TextInput,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
@@ -29,7 +27,7 @@ export default function Note() {
   const { personId, categoryId, favorite, originalIndex } =
     useLocalSearchParams();
   const categoryIdInt = parseInt(categoryId);
-  const fadeopacity = useSharedValue(0);
+  const fadeopacity = useSharedValue(1);
   let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
   const categoryName = getCategoryNameById(categoryIdInt);
@@ -47,14 +45,14 @@ export default function Note() {
         setNoteDesc(note.description);
         console.log(notetitle, notedesc); // Debugging: Check state updates
       } catch (error) {
-        console.error('Failed to fetch note data:', error);
+        console.error("Failed to fetch note data:", error);
       }
     };
 
     fetchNote();
 
     setTimeout(() => {
-      fadeopacity.value = withTiming(0, { duration: 500 });
+      fadeopacity.value = withTiming(1, { duration: 500 });
     }, 500);
   }, [originalIndex]);
 
@@ -83,7 +81,7 @@ export default function Note() {
       );
       return;
     }
-  
+
     Alert.alert(
       "Save Note",
       "Do you want to save the note?",
@@ -96,25 +94,28 @@ export default function Note() {
           text: "OK",
           onPress: async () => {
             try {
-              const response = await fetch("https://backend-notes-moviles.onrender.com/createNote", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  title: notetitle,
-                  description: notedesc,
-                  user: personId, // Replace with actual user ID
-                  category: categoryId, // Replace with actual category ID
-                  priority: "High", // Replace with actual priority
-                  favorite: false, // Replace with actual favorite status
-                }),
-              });
-  
+              const response = await fetch(
+                "https://backend-notes-moviles.onrender.com/createNote",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    title: notetitle,
+                    description: notedesc,
+                    user: personId, // Replace with actual user ID
+                    category: categoryId, // Replace with actual category ID
+                    priority: "High", // Replace with actual priority
+                    favorite: false, // Replace with actual favorite status
+                  }),
+                }
+              );
+
               if (!response.ok) {
                 throw new Error("Failed to save the note");
               }
-  
+
               console.log("Note saved successfully");
               await playSound(require("../assets/images/SFX/Back.wav"));
               fadeopacity.value = withTiming(1, { duration: 500 }, () => {
@@ -125,7 +126,10 @@ export default function Note() {
               }, 500);
             } catch (error) {
               console.error("Error saving note:", error);
-              Alert.alert("Error", "Failed to save the note. Please try again.");
+              Alert.alert(
+                "Error",
+                "Failed to save the note. Please try again."
+              );
             }
           },
         },
@@ -141,7 +145,7 @@ export default function Note() {
   const handleDelete = async () => {
     console.log("Delete Note Button Pressed");
     await playSound(require("../assets/images/SFX/Delete.wav"));
-  
+
     Alert.alert(
       "Confirm Delete",
       "Are you sure you want to delete this note?",
