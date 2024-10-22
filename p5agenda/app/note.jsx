@@ -7,6 +7,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
@@ -34,16 +35,19 @@ export default function Note() {
   const categoryName = getCategoryNameById(categoryIdInt);
 
   useEffect(() => {
+    console.log(originalIndex); // Debugging: Check originalIndex value
     const fetchNote = async () => {
       try {
         const response = await fetch(
-          `https://backend-notes-moviles.onrender.com/getNotes/${personId}/${originalIndex}`
+          `https://backend-notes-moviles.onrender.com/getOneNote/${originalIndex}`
         );
-        const note = response.data;
+        const note = await response.json();
+        console.log(note); // Debugging: Check the fetched note
         setNoteTitle(note.title);
         setNoteDesc(note.description);
+        console.log(notetitle, notedesc); // Debugging: Check state updates
       } catch (error) {
-        console.error("Failed to fetch note data:", error);
+        console.error('Failed to fetch note data:', error);
       }
     };
 
@@ -71,15 +75,64 @@ export default function Note() {
   });
 
   const handleBack = async () => {
-    console.log("Back from Note Button Pressed");
-    await playSound(require("../assets/images/SFX/Back.wav"));
-    // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-    //   fadeopacity.value = 1;
-    // });
-    router.navigate("/home");
-    setTimeout(() => {}, 500);
+    if (notetitle.trim().length === 0 || notedesc.trim().length === 0) {
+      Alert.alert(
+        "Validation Error",
+        "Title and description must have at least one character.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+  
+    Alert.alert(
+      "Save Note",
+      "Do you want to save the note?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const response = await fetch("https://backend-notes-moviles.onrender.com/createNote", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  title: notetitle,
+                  description: notedesc,
+                  user: personId, // Replace with actual user ID
+                  category: categoryId, // Replace with actual category ID
+                  priority: "High", // Replace with actual priority
+                  favorite: false, // Replace with actual favorite status
+                }),
+              });
+  
+              if (!response.ok) {
+                throw new Error("Failed to save the note");
+              }
+  
+              console.log("Note saved successfully");
+              await playSound(require("../assets/images/SFX/Back.wav"));
+              fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+                fadeopacity.value = 1;
+              });
+              setTimeout(() => {
+                router.replace("/home");
+              }, 500);
+            } catch (error) {
+              console.error("Error saving note:", error);
+              Alert.alert("Error", "Failed to save the note. Please try again.");
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
-
   const handleFav = async () => {
     console.log("Toggle Favorite Button Pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
@@ -88,6 +141,46 @@ export default function Note() {
   const handleDelete = async () => {
     console.log("Delete Note Button Pressed");
     await playSound(require("../assets/images/SFX/Delete.wav"));
+  
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this note?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const response = await fetch(
+                `https://backend-notes-moviles.onrender.com/deleteNote/${originalIndex}`,
+                {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              const noteMessage = await response.json();
+              console.log(noteMessage);
+              if (response.ok) {
+                console.log("Note deleted successfully");
+                // Navigate back to home or update the state to remove the deleted note
+                router.navigate("/home");
+              } else {
+                console.error("Failed to delete note");
+              }
+            } catch (error) {
+              console.error("Failed to fetch note data:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
