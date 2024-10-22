@@ -373,7 +373,7 @@ export default function Home() {
     fetchNotes();
 
     setTimeout(() => {
-      fadeopacity.value = withTiming(0, { duration: 500 });
+      fadeopacity.value = withTiming(1, { duration: 500 });
     }, 500);
   }, []);
 

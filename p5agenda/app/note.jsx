@@ -5,9 +5,7 @@ import {
   Image,
   TextInput,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
@@ -29,7 +27,7 @@ export default function Note() {
   const { personId, categoryId, favorite, originalIndex } =
     useLocalSearchParams();
   const categoryIdInt = parseInt(categoryId);
-  const fadeopacity = useSharedValue(0);
+  const fadeopacity = useSharedValue(1);
   let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
   const categoryName = getCategoryNameById(categoryIdInt);
@@ -47,14 +45,14 @@ export default function Note() {
         setNoteDesc(note.description);
         console.log(notetitle, notedesc); // Debugging: Check state updates
       } catch (error) {
-        console.error('Failed to fetch note data:', error);
+        console.error("Failed to fetch note data:", error);
       }
     };
 
     fetchNote();
 
     setTimeout(() => {
-      fadeopacity.value = withTiming(0, { duration: 500 });
+      fadeopacity.value = withTiming(1, { duration: 500 });
     }, 500);
   }, [originalIndex]);
 
@@ -118,7 +116,7 @@ export default function Note() {
   const handleDelete = async () => {
     console.log("Delete Note Button Pressed");
     await playSound(require("../assets/images/SFX/Delete.wav"));
-  
+
     Alert.alert(
       "Confirm Delete",
       "Are you sure you want to delete this note?",
