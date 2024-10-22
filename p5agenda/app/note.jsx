@@ -31,6 +31,7 @@ export default function Note() {
   let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
   const categoryName = getCategoryNameById(categoryIdInt);
+  let [favNote,setFavNote]= useState(favorite)
 
   useEffect(() => {
     console.log(originalIndex); // Debugging: Check originalIndex value
@@ -43,13 +44,14 @@ export default function Note() {
         console.log(note); // Debugging: Check the fetched note
         setNoteTitle(note.title);
         setNoteDesc(note.description);
-        console.log(notetitle, notedesc); // Debugging: Check state updates
+        setFavNote = (note.favorite)
       } catch (error) {
         console.error("Failed to fetch note data:", error);
       }
     };
 
-    fetchNote();
+    fetchNote()
+    console.log(favorite)
 
     setTimeout(() => {
       fadeopacity.value = withTiming(1, { duration: 500 });
@@ -87,6 +89,7 @@ export default function Note() {
           // Include the fields you want to update
           title: notetitle,
           description: notedesc,
+          favorite:setFavNote
         }),
       });
   
@@ -111,7 +114,9 @@ export default function Note() {
   const handleFav = async () => {
     console.log("Toggle Favorite Button Pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
-  };
+    setFavNote = !setFavNote
+    console.log(setFavNote)
+    };
 
   const handleDelete = async () => {
     console.log("Delete Note Button Pressed");
