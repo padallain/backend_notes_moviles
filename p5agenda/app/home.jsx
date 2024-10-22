@@ -321,34 +321,35 @@ export default function Home() {
     });
   };
 
+
   useEffect(() => {
     animateCards();
   }, [filteredCards]);
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const response = await fetch(
-          `https://backend-notes-moviles.onrender.com/getNotes/${personId}`
-        );
-        const notes = await response.json();
-        const formattedCards = notes.map((note, index) => ({
-          id: index + 1,
-          originalIndex: note._id,
-          name: note.title,
-          categoryId: parseInt(note.category, 10),
-          favorite: note.favorite,
-          priority: note.priority,
-        }));
-        setCards(formattedCards);
-        setFilteredCards(formattedCards);
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchNotes = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `https://backend-notes-moviles.onrender.com/getNotes/${personId}`
+  //       );
+  //       const notes = await response.json();
+  //       const formattedCards = notes.map((note, index) => ({
+  //         id: index + 1,
+  //         originalIndex: note._id,
+  //         name: note.title,
+  //         categoryId: parseInt(note.category, 10),
+  //         favorite: note.favorite,
+  //         priority: note.priority,
+  //       }));
+  //       setCards(formattedCards);
+  //       setFilteredCards(formattedCards);
+  //     } catch (error) {
+  //       console.error("Error fetching notes:", error);
+  //     }
+  //   };
 
-    fetchNotes();
-  }, [personId]);
+  //   fetchNotes();
+  // }, [personId]);
 
   useEffect(() => {
     console.log(`Welcome ${name}, your personId is ${personId}`);
@@ -363,8 +364,18 @@ export default function Home() {
           },
         });
 
-        const data = await response.json();
-        console.log("Notes:", data);
+        const notes = await response.json();
+        console.log(notes);
+        const formattedCards = notes.map((note, index) => ({
+          id: index + 1,
+          originalIndex: note._id,
+          name: note.title,
+          categoryId: parseInt(note.category, 10),
+          favorite: note.favorite,
+          priority: note.priority,
+        }));
+        setCards(formattedCards);
+        setFilteredCards(formattedCards);
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
