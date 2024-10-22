@@ -1,4 +1,11 @@
-import { View, Image, Pressable, TextInput, Keyboard } from "react-native";
+import {
+  View,
+  Image,
+  Pressable,
+  TextInput,
+  Keyboard,
+  Text,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
   Easing,
@@ -11,7 +18,6 @@ import Animated, {
 import { router, SplashScreen } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { playSound } from "../components/soundUtils";
-import { useRouter } from "expo-router";
 import styles from "./indexstyles";
 
 SplashScreen.preventAutoHideAsync();
@@ -266,7 +272,6 @@ export default function Index() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-
   const validateEmail = (text) => {
     // Actualiza el estado del email antes de validar
     setEmail(text);
@@ -432,10 +437,9 @@ export default function Index() {
     //   router.push("/home");
     // }, 500);
 
-    // Datos de inicio de sesión (capturados de los inputs)
     const loginData = {
-      username: username, // El valor capturado del input de email
-      password: password, // El valor capturado del input de password
+      username: username,
+      password: password,
     };
 
     console.log(loginData);

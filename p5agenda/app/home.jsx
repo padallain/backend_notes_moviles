@@ -139,7 +139,7 @@ const NewNoteSelect = [
   },
   {
     id: 19,
-    name: "New Note XIX",
+    name: "New Note XVIIII",
   },
   {
     id: 20,
@@ -156,11 +156,19 @@ export { getCategoryNameById };
 
 export default function Home() {
   const { name, personId } = useLocalSearchParams();
+  const popupenter = useSharedValue(0);
   const fadeopacity = useSharedValue(1);
   const [selectedCategory, setSelectedCategory] = useState(11);
   const [filteredCards, setFilteredCards] = useState([]);
   const [cards, setCards] = useState([]);
+  const [pointerEventsEnabled, setPointerEventsEnabled] = useState(false);
   const opacity = useSharedValue(0);
+
+  const PopupEnter = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: popupenter.value }],
+    };
+  });
 
   const Item = ({
     id,
@@ -205,12 +213,10 @@ export default function Home() {
           pressStyle={homestyles.cardpressable}
           style={homestyles.card}
         />
-        {favorite && (
-          <Image
-            source={require("../assets/images/Home/isFav.png")}
-            style={homestyles.isfav}
-          />
-        )}
+        <Image
+          source={require("../assets/images/Home/isFav.png")}
+          style={[homestyles.isfav, !favorite && homestyles.hiddenFav]}
+        />
       </View>
     );
   };
@@ -245,6 +251,30 @@ export default function Home() {
       />
     </View>
   );
+
+  const NewNoteCards = ({ id, name }) => {
+    return (
+      <View style={homestyles.popupItemContainer}>
+        <Text
+          style={homestyles.popuptextitle}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
+          {name}
+        </Text>
+        <Image
+          source={require("../assets/images/Home/NoteNotch.png")}
+          style={homestyles.popupcardnotch}
+        />
+        <AnimatedButton
+          onPress={() => handleNewCardSelect()}
+          source={imageMapCard[id]}
+          pressStyle={homestyles.popupcardpressable}
+          style={homestyles.popupcard}
+        />
+      </View>
+    );
+  };
 
   const handleCardPress = async (
     id,
@@ -406,7 +436,7 @@ export default function Home() {
                   },
                   body: JSON.stringify({
                     email_user: "padcitoallain@gmail.com",
-                  }), // Ajusta el email según tu lógica
+                  }),
                 }
               );
 
@@ -426,14 +456,41 @@ export default function Home() {
   };
 
   const handleNewNotePress = async () => {
-    console.log("New Note Pressed");
+    console.log("New Note Button Pressed");
+    setPointerEventsEnabled(true);
     await playSound(require("../assets/images/SFX/Select.wav"));
-    fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-      fadeopacity.value = 1;
+    popupenter.value = withTiming(
+      -400,
+      { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+      () => {
+        popupenter.value = -400;
+      }
+    );
+    fadeopacity.value = withTiming(0.75, { duration: 1000 }, () => {
+      fadeopacity.value = 0.75;
     });
-    setTimeout(() => {
-      router.push("/note");
-    }, 500);
+  };
+
+  const handleNewCardSelect = async () => {
+    console.log("New Card Selected");
+    await playSound(require("../assets/images/SFX/Select.wav"));
+    setPointerEventsEnabled(false);
+  };
+
+  const handlePopupBackPress = async () => {
+    console.log("Popup Back Pressed");
+    setPointerEventsEnabled(false);
+    await playSound(require("../assets/images/SFX/Back.wav"));
+    popupenter.value = withTiming(
+      0,
+      { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+      () => {
+        popupenter.value = 0;
+      }
+    );
+    fadeopacity.value = withTiming(0, { duration: 1000 }, () => {
+      fadeopacity.value = 0;
+    });
   };
 
   return (
@@ -444,7 +501,7 @@ export default function Home() {
     >
       <Animated.View
         style={[homestyles.blackfade, FadeOpacity]}
-        pointerEvents={"none"}
+        pointerEvents={pointerEventsEnabled ? "auto" : "none"}
       />
       <Image
         source={require("../assets/images/DarkStarsBGHD.png")}
@@ -507,18 +564,132 @@ export default function Home() {
           />
         </Animated.View>
       </View>
+      <Animated.View style={[homestyles.popupview, PopupEnter]}>
+        <Text style={homestyles.popuptext}>
+          Press the Arcana you'd like on your new Note!
+        </Text>
+        <AnimatedButton
+          onPress={handlePopupBackPress}
+          source={require("../assets/images/Note/Back.png")}
+          pressStyle={homestyles.popupbackpressable}
+          style={homestyles.popupback}
+        />
+        <Image
+          source={require("../assets/images/Home/Popup.png")}
+          style={homestyles.popup}
+        />
+        <View style={homestyles.popupListContainer}>
+          <FlatList
+            data={NewNoteSelect}
+            renderItem={({ item }) => (
+              <NewNoteCards id={item.id} name={item.name} />
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </Animated.View>
     </View>
   );
 }
 
 const homestyles = StyleSheet.create({
+  popupItemContainer: {
+    flex: 1,
+    marginTop: 18,
+    marginHorizontal: 5,
+    alignItems: "center",
+  },
+  popupListContainer: {
+    height: 400,
+    marginTop: 360,
+    marginHorizontal: 55,
+    left: 16,
+    zIndex: 21,
+  },
+  popuptextitle: {
+    fontFamily: "P5-Font",
+    fontSize: 11,
+    color: "#fff",
+    textAlign: "center",
+    transform: [{ rotate: "-8deg" }],
+    zIndex: 0,
+    width: 115,
+    top: 25,
+    left: 2,
+  },
+  popupcardnotch: {
+    width: 130,
+    height: 58,
+    top: -12,
+    zIndex: -1,
+  },
+  popupcardpressable: {
+    width: 75,
+    height: 150,
+  },
+  popupcard: {
+    width: 75,
+    height: 150,
+    top: -20,
+    left: 3,
+  },
+  popupview: {
+    position: "absolute",
+    backgroundColor: "transparent",
+    width: "100%",
+    height: "120%",
+    left: 400,
+    top: 20,
+    zIndex: 20,
+  },
+  popup: {
+    position: "absolute",
+    width: 390,
+    height: 390,
+    left: 2,
+    top: 250,
+    zIndex: 20,
+  },
+  popuptext: {
+    fontFamily: "P5-Font",
+    fontSize: 17,
+    zIndex: 25,
+    color: "#fff",
+    position: "absolute",
+    width: 200,
+    height: 45,
+    left: 152,
+    top: 335,
+    textAlign: "center",
+  },
+  popupbackpressable: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    zIndex: 25,
+    transform: [{ rotate: "-3deg" }],
+  },
+  popupback: {
+    position: "absolute",
+    width: 100,
+    height: 70,
+    left: 32,
+    top: 323,
+    zIndex: 25,
+  },
   isfav: {
     position: "relative",
     width: 45,
     height: 45,
-    bottom: 60,
+    bottom: 65,
     left: -60,
     zIndex: 9,
+    marginBottom: -48,
+  },
+  hiddenFav: {
+    opacity: 0,
   },
   welcome: {
     fontFamily: "P5-Font",

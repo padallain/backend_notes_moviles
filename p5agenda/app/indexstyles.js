@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     position: "absolute", // Asegúrate de que esté en posición absoluta
     backgroundColor: "transparent", // Fondo transparente
-  }, 
+  },
   fieldforgot4: {
     position: "absolute",
     width: 250,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     position: "absolute", // Asegúrate de que esté en posición absoluta
     backgroundColor: "transparent", // Fondo transparente
-  }, 
+  },
   sendbutton: {
     position: "absolute",
     width: 160,
