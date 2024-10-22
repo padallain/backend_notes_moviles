@@ -432,10 +432,15 @@ export default function Home() {
       fadeopacity.value = 1;
     });
     setTimeout(() => {
-      router.push("/note");
-    }, 500);
-  };
-
+      router.push({
+      pathname: "/note",
+      params: {
+        personId,
+        categoryId,
+      },
+    });;
+  });
+}
   return (
     <View
       style={{
