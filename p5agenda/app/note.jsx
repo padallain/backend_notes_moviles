@@ -75,63 +75,14 @@ export default function Note() {
   });
 
   const handleBack = async () => {
-    if (notetitle.trim().length === 0 || notedesc.trim().length === 0) {
-      Alert.alert(
-        "Validation Error",
-        "Title and description must have at least one character.",
-        [{ text: "OK" }]
-      );
-      return;
-    }
-  
-    Alert.alert(
-      "Save Note",
-      "Do you want to save the note?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: async () => {
-            try {
-              const response = await fetch("https://backend-notes-moviles.onrender.com/createNote", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  title: notetitle,
-                  description: notedesc,
-                  user: personId, // Replace with actual user ID
-                  category: categoryId, // Replace with actual category ID
-                  priority: "High", // Replace with actual priority
-                  favorite: false, // Replace with actual favorite status
-                }),
-              });
-  
-              if (!response.ok) {
-                throw new Error("Failed to save the note");
-              }
-  
-              console.log("Note saved successfully");
-              await playSound(require("../assets/images/SFX/Back.wav"));
-              fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-                fadeopacity.value = 1;
-              });
-              setTimeout(() => {
-                router.replace("/home");
-              }, 500);
-            } catch (error) {
-              console.error("Error saving note:", error);
-              Alert.alert("Error", "Failed to save the note. Please try again.");
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    console.log("Back from Note Button Pressed");
+    await playSound(require("../assets/images/SFX/Back.wav"));
+    // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+    //   fadeopacity.value = 1;
+    // });
+    router.navigate("/home");
+    setTimeout(() => {}, 500);
+
   };
   const handleFav = async () => {
     console.log("Toggle Favorite Button Pressed");
