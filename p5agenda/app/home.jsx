@@ -172,6 +172,7 @@ export default function Home() {
 
   const Item = ({
     id,
+    card,
     name,
     categoryId,
     priority,
@@ -209,7 +210,7 @@ export default function Home() {
               originalIndex
             )
           }
-          source={imageMapCard[id]}
+          source={imageMapCard[card]}
           pressStyle={homestyles.cardpressable}
           style={homestyles.card}
         />
@@ -367,6 +368,7 @@ export default function Home() {
         console.log(notes);
         const formattedCards = notes.map((note, index) => ({
           id: index + 1,
+          card: note.card,
           originalIndex: note._id,
           name: note.title,
           categoryId: parseInt(note.category, 10),
@@ -562,6 +564,7 @@ export default function Home() {
             renderItem={({ item }) => (
               <Item
                 id={item.id}
+                card={item.card}
                 name={item.name}
                 categoryId={item.categoryId}
                 priority={item.priority}
