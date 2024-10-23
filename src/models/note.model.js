@@ -33,8 +33,10 @@ const noteSchema = new Schema(
       default: false,                        // Option to mark a note as favorite
     },
     card: {
-      type: Number,                          // Add the card field
-      required: true,                        // Make it required if necessary
+      type: Number,
+        min: 1,
+        max: 20,
+        required: true                       // Make it required if necessary
     },
     createdAt: {
       type: Date,
