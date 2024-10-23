@@ -321,7 +321,6 @@ export default function Home() {
     });
   };
 
-
   useEffect(() => {
     animateCards();
   }, [filteredCards]);
@@ -486,6 +485,7 @@ export default function Home() {
     console.log("New Card Selected");
     await playSound(require("../assets/images/SFX/Select.wav"));
     setPointerEventsEnabled(false);
+    console.log("Current Selected Category: " + selectedCategory);
   };
 
   const handlePopupBackPress = async () => {
