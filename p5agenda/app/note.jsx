@@ -30,8 +30,8 @@ export default function Note() {
   const fadeopacity = useSharedValue(1);
   let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
+  let [favNote, setFavNote] = useState(favorite);
   const categoryName = getCategoryNameById(categoryIdInt);
-  let [favNote,setFavNote]= useState(favorite)
 
   useEffect(() => {
     console.log(originalIndex); // Debugging: Check originalIndex value
@@ -44,14 +44,14 @@ export default function Note() {
         console.log(note); // Debugging: Check the fetched note
         setNoteTitle(note.title);
         setNoteDesc(note.description);
-        setFavNote = (note.favorite)
+        setFavNote = note.favorite;
       } catch (error) {
         console.error("Failed to fetch note data:", error);
       }
     };
 
-    fetchNote()
-    console.log(favorite)
+    fetchNote();
+    console.log(favorite);
 
     setTimeout(() => {
       fadeopacity.value = withTiming(1, { duration: 500 });
@@ -77,32 +77,35 @@ export default function Note() {
   const handleBack = async () => {
     console.log("Back from Note Button Pressed");
     await playSound(require("../assets/images/SFX/Back.wav"));
-  
+
     // Fetch request to update the note
     try {
-      const response = await fetch(`https://backend-notes-moviles.onrender.com/updateNote/${originalIndex}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          // Include the fields you want to update
-          title: notetitle,
-          description: notedesc,
-          favorite:setFavNote
-        }),
-      });
-  
+      const response = await fetch(
+        `https://backend-notes-moviles.onrender.com/updateNote/${originalIndex}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // Include the fields you want to update
+            title: notetitle,
+            description: notedesc,
+            favorite: setFavNote,
+          }),
+        }
+      );
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
-  
+
       const data = await response.json();
-      console.log('Note updated successfully:', data);
+      console.log("Note updated successfully:", data);
     } catch (error) {
-      console.error('Error updating note:', error);
+      console.error("Error updating note:", error);
     }
-  
+
     setTimeout(() => {
       router.navigate({
         pathname: "/home",
@@ -114,9 +117,9 @@ export default function Note() {
   const handleFav = async () => {
     console.log("Toggle Favorite Button Pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
-    setFavNote = !setFavNote
-    console.log(setFavNote)
-    };
+    setFavNote(!favNote);
+    console.log(favNote);
+  };
 
   const handleDelete = async () => {
     console.log("Delete Note Button Pressed");
@@ -196,9 +199,13 @@ export default function Note() {
       />
       <AnimatedButton
         onPress={handleFav}
-        source={require("../assets/images/Note/Fav.png")}
+        source={
+          favNote
+            ? require("../assets/images/Note/Fav.png")
+            : require("../assets/images/Note/NoFav.png")
+        }
         pressStyle={notestyles.favpressable}
-        style={notestyles.nofav}
+        style={notestyles.fav}
       />
       <AnimatedButton
         onPress={handleDelete}
@@ -319,15 +326,15 @@ notestyles = StyleSheet.create({
   },
   favpressable: {
     position: "absolute",
-    right: 0,
+    left: 0,
     top: 0,
     zIndex: 3,
   },
-  nofav: {
+  fav: {
     position: "absolute",
     width: 80,
     height: 80,
-    right: 157,
+    left: 140,
     top: 50,
     zIndex: 3,
   },

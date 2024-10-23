@@ -483,11 +483,12 @@ export default function Home() {
     });
   };
 
-  const handleNewCardSelect = async () => {
+  const handleNewCardSelect = async (id) => {
     console.log("New Card Selected");
     await playSound(require("../assets/images/SFX/Select.wav"));
     setPointerEventsEnabled(false);
     console.log("Current Selected Category: " + selectedCategory);
+    console.log("New Card Selected: " + id);
   };
 
   const handlePopupBackPress = async () => {
