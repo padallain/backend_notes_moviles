@@ -268,7 +268,7 @@ export default function Home() {
           style={homestyles.popupcardnotch}
         />
         <AnimatedButton
-          onPress={() => handleNewCardSelect(id)}
+          onPress={() => handleNewCardSelect(id , name)}
           source={imageMapCard[id]}
           pressStyle={homestyles.popupcardpressable}
           style={homestyles.popupcard}
@@ -483,12 +483,57 @@ export default function Home() {
     });
   };
 
-  const handleNewCardSelect = async (id) => {
+  const handleNewCardSelect = async (id , name) => {
     console.log("New Card Selected");
     await playSound(require("../assets/images/SFX/Select.wav"));
     setPointerEventsEnabled(false);
     console.log("Current Selected Category: " + selectedCategory);
-    console.log("New Card Selected: " + id);
+    console.log("New Card Selected: " + id , name);
+  
+    // Define the data to be sent in the request
+    const requestData = {
+      title: name,
+      description: "",
+      user: personId, // Replace with the actual user ID
+      category: selectedCategory, // Replace with the actual category ID
+      priority: "High",
+      favorite: false,
+      card: id,
+    };
+  
+    try {
+      // Perform the fetch request
+      const response = await fetch("https://backend-notes-moviles.onrender.com/createNote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+  
+      // Check if the response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      // Parse the response data
+      const responseData = await response.json();
+      console.log("Note created successfully:", responseData);
+
+      popupenter.value = withTiming(
+        0,
+        { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+        () => {
+          popupenter.value = 0;
+        }
+      );
+      fadeopacity.value = withTiming(0, { duration: 1000 }, () => {
+        fadeopacity.value = 0;
+      });
+
+    } catch (error) {
+      console.error("Error creating note:", error);
+    }
   };
 
   const handlePopupBackPress = async () => {
