@@ -268,7 +268,7 @@ export default function Home() {
           style={homestyles.popupcardnotch}
         />
         <AnimatedButton
-          onPress={() => handleNewCardSelect()}
+          onPress={() => handleNewCardSelect(id)}
           source={imageMapCard[id]}
           pressStyle={homestyles.popupcardpressable}
           style={homestyles.popupcard}
