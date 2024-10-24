@@ -155,10 +155,11 @@ const getCategoryNameById = (categoryId) => {
 export { getCategoryNameById };
 
 export default function Home() {
-  const { name, personId } = useLocalSearchParams();
+  const { name, personId, category } = useLocalSearchParams();
+  const calledCategory = parseInt(category, 10);
   const popupenter = useSharedValue(0);
   const fadeopacity = useSharedValue(1);
-  const [selectedCategory, setSelectedCategory] = useState(11);
+  const [selectedCategory, setSelectedCategory] = useState(calledCategory);
   const [filteredCards, setFilteredCards] = useState([]);
   const [cards, setCards] = useState([]);
   const [pointerEventsEnabled, setPointerEventsEnabled] = useState(false);
@@ -286,15 +287,18 @@ export default function Home() {
     originalIndex
   ) => {
     await playSound(require("../assets/images/SFX/Battle UI.wav"));
-    router.push({
-      pathname: "/note",
-      params: {
-        personId,
-        categoryId,
-        favorite,
-        originalIndex,
-      },
-    });
+    fadeopacity.value = withTiming(1, { duration: 500 });
+    setTimeout(() => {
+      router.push({
+        pathname: "/note",
+        params: {
+          personId,
+          categoryId,
+          favorite,
+          originalIndex,
+        },
+      });
+    }, 500);
   };
 
   const handleCategoryPress = async (id) => {
@@ -311,7 +315,6 @@ export default function Home() {
       const newFilteredCards = cards.filter((card) => card.categoryId === id);
       setFilteredCards(newFilteredCards);
     }
-    animateCards();
   };
 
   const animateCards = () => {
@@ -323,81 +326,65 @@ export default function Home() {
   };
 
   useEffect(() => {
-    animateCards();
-  }, [filteredCards]);
-
-  // useEffect(() => {
-  //   const fetchNotes = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://backend-notes-moviles.onrender.com/getNotes/${personId}`
-  //       );
-  //       const notes = await response.json();
-  //       const formattedCards = notes.map((note, index) => ({
-  //         id: index + 1,
-  //         originalIndex: note._id,
-  //         name: note.title,
-  //         categoryId: parseInt(note.category, 10),
-  //         favorite: note.favorite,
-  //         priority: note.priority,
-  //       }));
-  //       setCards(formattedCards);
-  //       setFilteredCards(formattedCards);
-  //     } catch (error) {
-  //       console.error("Error fetching notes:", error);
-  //     }
-  //   };
-
-  //   fetchNotes();
-  // }, [personId]);
-
-  useEffect(() => {
     console.log(`Welcome ${name}, your personId is ${personId}`);
-
-    const fetchNotes = async () => {
-      const url = `https://backend-notes-moviles.onrender.com/getNotes/${personId}`;
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        const notes = await response.json();
-        console.log(notes);
-        const formattedCards = notes.map((note, index) => ({
-          id: index + 1,
-          card: note.card,
-          originalIndex: note._id,
-          name: note.title,
-          categoryId: parseInt(note.category, 10),
-          favorite: note.favorite,
-          priority: note.priority,
-        }));
-        setCards(formattedCards);
-        setFilteredCards(formattedCards);
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-      }
-    };
-
-    fetchNotes();
-
-    setTimeout(() => {
-      fadeopacity.value = withTiming(1, { duration: 500 });
-    }, 500);
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
+      const fetchNotes = async () => {
+        const url = `https://backend-notes-moviles.onrender.com/getNotes/${personId}`;
+        try {
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const notes = await response.json();
+          console.log(notes);
+          const formattedCards = notes.map((note, index) => ({
+            id: index + 1,
+            card: note.card,
+            originalIndex: note._id,
+            name: note.title,
+            categoryId: parseInt(note.category, 10),
+            favorite: note.favorite,
+            priority: note.priority,
+          }));
+          setCards(formattedCards);
+
+          if (selectedCategory === 11) {
+            setFilteredCards(formattedCards);
+          } else if (selectedCategory === 10) {
+            const favoriteNotes = formattedCards.filter(
+              (card) => card.favorite === true
+            );
+            setFilteredCards(favoriteNotes);
+          } else {
+            const newFilteredCards = formattedCards.filter(
+              (card) => card.categoryId === selectedCategory
+            );
+            setFilteredCards(newFilteredCards);
+          }
+        } catch (error) {
+          console.error("Error fetching notes:", error);
+        }
+      };
+
+      fetchNotes();
+
       setTimeout(() => {
-        fadeopacity.value = withTiming(0, { duration: 500 }, () => {
+        fadeopacity.value = withTiming(0, { duration: 600 }, () => {
           fadeopacity.value = 0;
         });
       }, 500);
-    }, [])
+    }, [personId, selectedCategory])
   );
+
+  useEffect(() => {
+    animateCards();
+  }, [1]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

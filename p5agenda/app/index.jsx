@@ -474,7 +474,7 @@ export default function Index() {
         setTimeout(() => {
           router.push({
             pathname: "/home",
-            params: { name: username, personId: data.personId }, // <-- Agrega personId aquí
+            params: { name: username, personId: data.personId, category: 11 }, // <-- Agrega personId aquí
           });
         }, 500);
       }

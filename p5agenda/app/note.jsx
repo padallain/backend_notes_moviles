@@ -30,7 +30,7 @@ export default function Note() {
   const fadeopacity = useSharedValue(1);
   let [notetitle, setNoteTitle] = useState("");
   let [notedesc, setNoteDesc] = useState("");
-  let [favNote, setFavNote] = useState(favorite);
+  let [favNote, setFavNote] = useState();
   const categoryName = getCategoryNameById(categoryIdInt);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Note() {
         console.log(note); // Debugging: Check the fetched note
         setNoteTitle(note.title);
         setNoteDesc(note.description);
-        setFavNote = note.favorite;
+        setFavNote(note.favorite);
       } catch (error) {
         console.error("Failed to fetch note data:", error);
       }
@@ -61,7 +61,7 @@ export default function Note() {
   useFocusEffect(
     React.useCallback(() => {
       setTimeout(() => {
-        fadeopacity.value = withTiming(0, { duration: 500 }, () => {
+        fadeopacity.value = withTiming(0, { duration: 700 }, () => {
           fadeopacity.value = 0;
         });
       }, 500);
@@ -91,7 +91,7 @@ export default function Note() {
             // Include the fields you want to update
             title: notetitle,
             description: notedesc,
-            favorite: setFavNote,
+            favorite: favNote,
           }),
         }
       );
@@ -106,6 +106,10 @@ export default function Note() {
       console.error("Error updating note:", error);
     }
 
+    fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+      fadeopacity.value = 1;
+    });
+
     setTimeout(() => {
       router.navigate({
         pathname: "/home",
@@ -115,10 +119,11 @@ export default function Note() {
   };
 
   const handleFav = async () => {
-    console.log("Toggle Favorite Button Pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
-    setFavNote(!favNote);
-    console.log(favNote);
+    const oldFavNote = favNote;
+    const newFavNote = !favNote;
+    setFavNote(newFavNote);
+    console.log(`Favorite changed from ${oldFavNote} to ${newFavNote}`);
   };
 
   const handleDelete = async () => {
@@ -334,7 +339,7 @@ notestyles = StyleSheet.create({
     position: "absolute",
     width: 80,
     height: 80,
-    left: 140,
+    left: 156,
     top: 50,
     zIndex: 3,
   },
