@@ -21,19 +21,9 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    // Validación de la contraseña (mínimo 8 caracteres, mayúsculas, minúsculas y caracteres especiales)
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-    }
-    if (!/[a-z]/.test(password)) {
-      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
-    }
-    if (!/[A-Z]/.test(password)) {
-      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
-    }
-    if (!/[@$!%*?&]/.test(password)) {
-      return res.status(400).json({ message: 'Password must contain at least one special character' });
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#^])[A-Za-z\d@$!%*?&.#^]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character' });
     }
 
     // Verificar si el usuario o el correo ya existen en la base de datos
@@ -212,7 +202,7 @@ const savePassword = async (req, res) => {
   }
 
   // Validación de la contraseña
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.^#])[A-Za-z\d@$!%*?&]{8,}$/;
   if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({ message: 'Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one number, and one special character' });
   }
