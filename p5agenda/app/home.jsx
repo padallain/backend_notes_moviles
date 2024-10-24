@@ -269,7 +269,7 @@ export default function Home() {
           style={homestyles.popupcardnotch}
         />
         <AnimatedButton
-          onPress={() => handleNewCardSelect(id , name)}
+          onPress={() => handleNewCardSelect(id, name)}
           source={imageMapCard[id]}
           pressStyle={homestyles.popupcardpressable}
           style={homestyles.popupcard}
@@ -379,12 +379,9 @@ export default function Home() {
           fadeopacity.value = 0;
         });
       }, 500);
+      animateCards();
     }, [personId, selectedCategory])
   );
-
-  useEffect(() => {
-    animateCards();
-  }, [1]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -470,13 +467,13 @@ export default function Home() {
     });
   };
 
-  const handleNewCardSelect = async (id , name) => {
+  const handleNewCardSelect = async (id, name) => {
     console.log("New Card Selected");
     await playSound(require("../assets/images/SFX/Select.wav"));
     setPointerEventsEnabled(false);
     console.log("Current Selected Category: " + selectedCategory);
-    console.log("New Card Selected: " + id , name);
-  
+    console.log("New Card Selected: " + id, name);
+
     // Define the data to be sent in the request
     const requestData = {
       title: name,
@@ -487,37 +484,50 @@ export default function Home() {
       favorite: false,
       card: id,
     };
-  
+
     try {
       // Perform the fetch request
-      const response = await fetch("https://backend-notes-moviles.onrender.com/createNote", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-  
+      const response = await fetch(
+        "https://backend-notes-moviles.onrender.com/createNote",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+
       // Check if the response is ok
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       // Parse the response data
       const responseData = await response.json();
       console.log("Note created successfully:", responseData);
 
       popupenter.value = withTiming(
-        0,
-        { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+        100,
+        { duration: 500, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
         () => {
-          popupenter.value = 0;
+          popupenter.value = 100;
         }
       );
-      fadeopacity.value = withTiming(0, { duration: 1000 }, () => {
-        fadeopacity.value = 0;
+
+      fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+        fadeopacity.value = 1;
       });
 
+      setTimeout(() => {
+        router.navigate("/reload");
+        setTimeout(() => {
+          router.navigate({
+            pathname: "/home",
+            params: { personId },
+          });
+        }, 200);
+      }, 300);
     } catch (error) {
       console.error("Error creating note:", error);
     }

@@ -156,7 +156,7 @@ export default function Note() {
               console.log(noteMessage);
               if (response.ok) {
                 console.log("Note deleted successfully");
-                // Navigate back to home or update the state to remove the deleted note
+                fadeopacity.value = withTiming(1, { duration: 500 });
                 setTimeout(() => {
                   router.navigate({
                     pathname: "/home",
