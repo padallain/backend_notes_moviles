@@ -19,6 +19,8 @@ import { router, SplashScreen } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { playSound } from "../components/soundUtils";
 import styles from "./indexstyles";
+import { RootSiblingParent } from 'react-native-root-siblings';
+import { showToast } from "../components/toastUtils";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -465,11 +467,13 @@ export default function Index() {
             ? "WRONG USERNAME OR PASSWORD"
             : data.message || "Login failed. Please check your credentials.";
 
-        console.error(errorMessage);
+       
+        showToast(errorMessage);
         setErrorMessage(errorMessage); // Mostrar mensaje de error en la UI
       } else {
         // Solo activar el fade y redirigir si el login es exitoso
         console.log("Login successful");
+        showToast("Login successful");
         fadeopacity.value = withTiming(1, { duration: 300 });
         setTimeout(() => {
           router.push({
@@ -511,8 +515,8 @@ export default function Index() {
       console.log(data);
 
       if (response.ok) {
-        console.log("User registered successfully");
-        setResponseMessage("User registered successfully");
+        showToast("User registered successfully");
+        console.log("User registered successfully", data);
         loginbook2.value = withTiming(
           -400,
           { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
@@ -540,7 +544,7 @@ export default function Index() {
 
         switch (data.message) {
           case "Invalid email formar":
-            errorMessage = "WRONG EMAIL FORMAT";
+            errorMessage = "WRONG EMAIL FORMAT"
             break;
           case "User already exists":
             errorMessage = "User already exists, please try logging in.";
@@ -563,7 +567,8 @@ export default function Index() {
             errorMessage = data.message || "Failed to register user";
         }
 
-        console.error(errorMessage);
+        showToast(errorMessage);
+        console.log(errorMessage);
       }
     } catch (error) {
       console.error("Error connecting to the server:", error.message);
@@ -572,6 +577,9 @@ export default function Index() {
   };
 
   const handleSendButtonPress = async () => {
+    setSecretCode("");
+    setNewPassword("");
+    setConfirmNewPassword("");
     console.log("Send button pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
     setIsSendPressableActive(false);
@@ -597,6 +605,7 @@ export default function Index() {
       const data = await response.json();
       if (response.ok) {
         console.log("Reset password email sent successfully", data);
+        showToast("Reset password email sent successfully");
         forgotpassmove.value = withTiming(
           900,
           { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
@@ -608,6 +617,7 @@ export default function Index() {
         console.log(
           `Error: ${data.message || "Failed to send reset password email"}`
         );
+        showToast("Reset password email sent successfully");
       }
     } catch (error) {
       console.error("Error connecting to the server:", error.message);
@@ -623,6 +633,7 @@ export default function Index() {
     // Verifica que el resetCode tenga 6 caracteres
     if (secretCode.length !== 6) {
       console.error("Incomplete code");
+      showToast("Invalid reset code. Please try again.");
       setIsVerifyPressableActive(true); // Reactivar el botón si el código es incorrecto
       setIsConfirmPressableActive(false);
       return;
@@ -649,6 +660,7 @@ export default function Index() {
       const data = await response.json();
       if (response.ok) {
         console.log("Verification successful", data);
+        showToast("Verification successful");
         forgotpassmove.value = withTiming(
           1300,
           { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
@@ -658,6 +670,7 @@ export default function Index() {
         );
       } else {
         console.log(`Error: ${data.message || "Failed to verify reset code"}`);
+        showToast("Failed to verify reset code");
       }
     } catch (error) {
       console.error("Error connecting to the server:", error.message);
@@ -667,13 +680,98 @@ export default function Index() {
   const handleConfirmButtonPress = async () => {
     console.log("Confirm button pressed");
     await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
-    // Add your navigation or other logic here
+
+    // Verify that newPassword and confirmNewPassword are the same
+    if (newPassword !== confirmNewPassword) {
+      showToast("Passwords do not match");
+      return;
+    }
+
+    const dataConfirm = {
+      newPassword: newPassword, 
+      email_user: email, 
+      confirmPassword: confirmNewPassword
+    };
+    console.log(dataConfirm);
+
+    // Perform the fetch request to the endpoint
+    try {
+      const response = await fetch("https://backend-notes-moviles.onrender.com/newPassword", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataConfirm),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Password confirmed successfully:", responseData);
+      showToast("Password confirmed successfully");
+      setIsLoginBack2PressableActive(false);
+    setIsSendPressableActive(false);
+    setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
+    loginbook2.value = withTiming(-400, {
+      duration: 1200,
+      easing: Easing.bezier(0.5, -0.5, 0.25, 1),
+    });
+    forgotpasstitlemove.value = withTiming(
+      0,
+      { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) },
+      () => {
+        forgotpassmove.value = 0;
+      }
+    );
+    buttonsmove.value = withTiming(-300, {
+      duration: 1000,
+      easing: Easing.bezier(0.25, -0.5, 0.25, 1),
+    });
+    backbuttonforgotmove.value = withTiming(300, {
+      duration: 1000,
+      easing: Easing.bezier(0.25, -0.25, 0.25, 1),
+    });
+    if (setIsSendPressableActive) {
+      forgotpassmove.value = withTiming(
+        0,
+        { duration: 1200, easing: Easing.bezier(0.5, -0.15, 0.25, 1) },
+        () => {
+          forgotpassmove.value = 0;
+        }
+      );
+    } else if (setIsVerifyPressableActive) {
+      forgotpassmove.value = withTiming(
+        400,
+        { duration: 1600, easing: Easing.bezier(0.5, -0.15, 0.25, 1) },
+        () => {
+          forgotpassmove.value = 400;
+        }
+      );
+    } else if (setIsConfirmPressableActive) {
+      forgotpassmove.value = withTiming(
+        800,
+        { duration: 2000, easing: Easing.bezier(0.5, -0.15, 0.25, 1) },
+        () => {
+          forgotpassmove.value = 800;
+        }
+      );
+    }
+    } catch (error) {
+      showToast("Error confirming password");
+    }
   };
 
   const BackToLogin1ButtonPress = async () => {
     console.log("Back To Login button pressed");
     setEmail(""); // Borra el email
     setPassword(""); // Borra el password
+    setSecretCode("");
+    setNewPassword("");
+    setConfirmNewPassword("");
     await playSound(require("../assets/images/SFX/Back.wav"));
     setIsLoginBack1PressableActive(false);
     setIsRegisterButtonPressableActive(false);
@@ -705,6 +803,11 @@ export default function Index() {
   };
 
   const BackToLogin2ButtonPress = async () => {
+    setEmail(""); // Borra el email
+    setPassword(""); // Borra el password
+    setSecretCode("");
+    setNewPassword("");
+    setConfirmNewPassword("");
     console.log("Back To Login button pressed");
     await playSound(require("../assets/images/SFX/Back.wav"));
     setIsLoginBack2PressableActive(false);
@@ -759,6 +862,7 @@ export default function Index() {
   };
 
   return (
+    <RootSiblingParent>
     <Pressable
       onPress={handlePress}
       disabled={pressableDisabled}
@@ -817,6 +921,7 @@ export default function Index() {
         />
 
         {/* ASSETS DE WELCOME Y LOGIN */}
+        
         <Animated.Image
           source={require("../assets/images/Login/SplitStripe.png")}
           style={[styles.splitstripe, SplitStripeAnim]}
@@ -859,6 +964,7 @@ export default function Index() {
             style={[styles.loginbutton, ButtonsAnim]}
           />
         </Pressable>
+        
         <Pressable
           onPress={handleRegisterPress}
           disabled={!isRegisterPressableActive}
@@ -1151,5 +1257,6 @@ export default function Index() {
         <View style={styles.under}></View>
       </Animated.View>
     </Pressable>
+    </RootSiblingParent>
   );
 }
