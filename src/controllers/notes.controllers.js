@@ -4,7 +4,7 @@ class Notes {
   // Create a new note
   async createNote(req, res) {
     try {
-      const { title, description, category, user, priority, favorite } = req.body;
+      const { title, description, category, user, priority, favorite, card } = req.body;
 
       console.log(req.body)
       const newNote = new Note({
@@ -14,6 +14,7 @@ class Notes {
         category: category || 'General',
         priority: priority || 'Low',
         favorite: favorite || false,
+        card: card,
       });
 
       const savedNote = await newNote.save();
