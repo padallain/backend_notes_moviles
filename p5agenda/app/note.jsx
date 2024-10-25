@@ -106,7 +106,7 @@ export default function Note() {
       console.error("Error updating note:", error);
     }
 
-    fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+    fadeopacity.value = withTiming(1, { duration: 300 }, () => {
       fadeopacity.value = 1;
     });
 
@@ -115,7 +115,7 @@ export default function Note() {
         pathname: "/home",
         params: { personId },
       });
-    }, 500);
+    }, 100);
   };
 
   const handleFav = async () => {

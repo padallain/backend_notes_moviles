@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, FlatList, Alert } from "react-native";
+import { Text, View, Image, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
   Easing,
@@ -11,7 +11,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
 import AnimatedButton from "../components/AnimatedButton";
 import { playSound } from "../components/soundUtils";
-import { imageMapCard, imageMapCategory } from "../components/imageMaps";
+import {
+  imageMapCard,
+  imageMapCategory,
+  imageMapPriority,
+} from "../components/imageMaps";
+import homestyles from "./homestyles";
 
 const Categories = [
   {
@@ -147,9 +152,76 @@ const NewNoteSelect = [
   },
 ];
 
+const PrioritySelect = [
+  {
+    id: 1,
+    name: "No. 1 (Highest)",
+  },
+  {
+    id: 2,
+    name: "No. 2",
+  },
+  {
+    id: 3,
+    name: "No. 3",
+  },
+  {
+    id: 4,
+    name: "No. 4",
+  },
+  {
+    id: 5,
+    name: "No. 5",
+  },
+  {
+    id: 6,
+    name: "No. 6",
+  },
+  {
+    id: 7,
+    name: "No. 7",
+  },
+  {
+    id: 8,
+    name: "No. 8",
+  },
+  {
+    id: 9,
+    name: "No. 9",
+  },
+  {
+    id: 10,
+    name: "No. 10",
+  },
+  {
+    id: 11,
+    name: "No. 11",
+  },
+  {
+    id: 12,
+    name: "No. 12",
+  },
+  {
+    id: 13,
+    name: "No. 13",
+  },
+  {
+    id: 14,
+    name: "No. 14",
+  },
+  {
+    id: 15,
+    name: "No. 15",
+  },
+  {
+    id: 16,
+    name: "No. 16 (Lowest)",
+  },
+];
+
 const getCategoryNameById = (categoryId) => {
   const category = Categories.find((cat) => cat.id === categoryId);
-  return category ? category.name : "Unknown Category";
+  return category ? category.name : "Unknown";
 };
 
 export { getCategoryNameById };
@@ -158,6 +230,7 @@ export default function Home() {
   const { name, personId, category } = useLocalSearchParams();
   const calledCategory = parseInt(category, 10);
   const popupenter = useSharedValue(0);
+  const popupenter2 = useSharedValue(0);
   const fadeopacity = useSharedValue(1);
   const [selectedCategory, setSelectedCategory] = useState(calledCategory);
   const [filteredCards, setFilteredCards] = useState([]);
@@ -168,6 +241,11 @@ export default function Home() {
   const PopupEnter = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: popupenter.value }],
+    };
+  });
+  const PopupEnter2 = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: popupenter2.value }],
     };
   });
 
@@ -215,6 +293,23 @@ export default function Home() {
           pressStyle={homestyles.cardpressable}
           style={homestyles.card}
         />
+        {selectedCategory === 10 ? (
+          <AnimatedButton
+            onPress={() => handlePriorityButtonPress(originalIndex, priority)}
+            source={imageMapPriority[priority]}
+            pressStyle={homestyles.prioritybuttonpressable}
+            style={homestyles.prioritybutton}
+            disabled={false}
+          />
+        ) : (
+          <AnimatedButton
+            onPress={() => {}}
+            source={imageMapPriority[priority]}
+            pressStyle={homestyles.prioritybuttonpressable}
+            style={homestyles.hiddenpriority}
+            disabled={true}
+          />
+        )}
         <Image
           source={require("../assets/images/Home/isFav.png")}
           style={[homestyles.isfav, !favorite && homestyles.hiddenFav]}
@@ -278,6 +373,30 @@ export default function Home() {
     );
   };
 
+  const PriorityCards = ({ id, name }) => {
+    return (
+      <View style={homestyles.popup2ItemContainer}>
+        <Text
+          style={homestyles.popup2textitle}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
+          {name}
+        </Text>
+        <Image
+          source={require("../assets/images/Home/NoteNotch.png")}
+          style={homestyles.popup2cardnotch}
+        />
+        <AnimatedButton
+          onPress={() => handleNewPrioritySelect(id)}
+          source={imageMapPriority[id]}
+          pressStyle={homestyles.popup2cardpressable}
+          style={homestyles.popup2card}
+        />
+      </View>
+    );
+  };
+
   const handleCardPress = async (
     id,
     name,
@@ -310,6 +429,13 @@ export default function Home() {
       setFilteredCards(cards);
     } else if (id === 10) {
       const favoriteNotes = cards.filter((card) => card.favorite === true);
+      // Sort by priority and then by updatedAt if priority is the same
+      favoriteNotes.sort((a, b) => {
+        if (a.priority === b.priority) {
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        }
+        return a.priority - b.priority;
+      });
       setFilteredCards(favoriteNotes);
     } else {
       const newFilteredCards = cards.filter((card) => card.categoryId === id);
@@ -342,6 +468,7 @@ export default function Home() {
           });
 
           const notes = await response.json();
+          notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
           console.log(notes);
           const formattedCards = notes.map((note, index) => ({
             id: index + 1,
@@ -350,23 +477,31 @@ export default function Home() {
             name: note.title,
             categoryId: parseInt(note.category, 10),
             favorite: note.favorite,
-            priority: note.priority,
+            priority: parseInt(note.priority, 10),
           }));
-          setCards(formattedCards);
 
-          if (selectedCategory === 11) {
-            setFilteredCards(formattedCards);
-          } else if (selectedCategory === 10) {
+          // Pre-sort the favorite notes by priority and updatedAt
+          if (selectedCategory === 10) {
             const favoriteNotes = formattedCards.filter(
               (card) => card.favorite === true
             );
+            favoriteNotes.sort((a, b) => {
+              if (a.priority === b.priority) {
+                return new Date(b.updatedAt) - new Date(a.updatedAt);
+              }
+              return a.priority - b.priority;
+            });
             setFilteredCards(favoriteNotes);
+          } else if (selectedCategory === 11) {
+            setFilteredCards(formattedCards);
           } else {
             const newFilteredCards = formattedCards.filter(
               (card) => card.categoryId === selectedCategory
             );
             setFilteredCards(newFilteredCards);
           }
+
+          setCards(formattedCards);
         } catch (error) {
           console.error("Error fetching notes:", error);
         }
@@ -375,7 +510,7 @@ export default function Home() {
       fetchNotes();
 
       setTimeout(() => {
-        fadeopacity.value = withTiming(0, { duration: 600 }, () => {
+        fadeopacity.value = withTiming(0, { duration: 400 }, () => {
           fadeopacity.value = 0;
         });
       }, 500);
@@ -480,7 +615,7 @@ export default function Home() {
       description: "",
       user: personId, // Replace with the actual user ID
       category: selectedCategory, // Replace with the actual category ID
-      priority: "High",
+      priority: 1,
       favorite: false,
       card: id,
     };
@@ -511,7 +646,7 @@ export default function Home() {
         100,
         { duration: 500, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
         () => {
-          popupenter.value = 100;
+          popupenter.value = 0;
         }
       );
 
@@ -526,8 +661,8 @@ export default function Home() {
             pathname: "/home",
             params: { personId },
           });
-        }, 200);
-      }, 300);
+        }, 150);
+      }, 200);
     } catch (error) {
       console.error("Error creating note:", error);
     }
@@ -542,6 +677,46 @@ export default function Home() {
       { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
       () => {
         popupenter.value = 0;
+      }
+    );
+    fadeopacity.value = withTiming(0, { duration: 1000 }, () => {
+      fadeopacity.value = 0;
+    });
+  };
+
+  const handlePriorityButtonPress = async (originalIndex, priority) => {
+    console.log("New Note Button Pressed");
+    console.log(
+      "Priority Button Pressed for originalIndex:",
+      originalIndex,
+      "priority:",
+      priority
+    );
+    setPointerEventsEnabled(true);
+    await playSound(require("../assets/images/SFX/Select.wav"));
+    popupenter2.value = withTiming(
+      400,
+      { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+      () => {
+        popupenter2.value = 400;
+      }
+    );
+    fadeopacity.value = withTiming(0.75, { duration: 1000 }, () => {
+      fadeopacity.value = 0.75;
+    });
+  };
+
+  const handleNewPrioritySelect = async (id) => {};
+
+  const handlePopupBackPress2 = async () => {
+    console.log("Priority Popup Back Pressed");
+    setPointerEventsEnabled(false);
+    await playSound(require("../assets/images/SFX/Back.wav"));
+    popupenter2.value = withTiming(
+      0,
+      { duration: 1100, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+      () => {
+        popupenter2.value = 0;
       }
     );
     fadeopacity.value = withTiming(0, { duration: 1000 }, () => {
@@ -647,319 +822,33 @@ export default function Home() {
           />
         </View>
       </Animated.View>
+
+      <Animated.View style={[homestyles.popup2view, PopupEnter2]}>
+        <Text style={homestyles.popup2text}>
+          Press the new Priority you'd like for this card to have!
+        </Text>
+        <AnimatedButton
+          onPress={handlePopupBackPress2}
+          source={require("../assets/images/Note/Back.png")}
+          pressStyle={homestyles.popup2backpressable}
+          style={homestyles.popup2back}
+        />
+        <Image
+          source={require("../assets/images/Home/Popup.png")}
+          style={homestyles.popup2}
+        />
+        <View style={homestyles.popup2ListContainer}>
+          <FlatList
+            data={PrioritySelect}
+            renderItem={({ item }) => (
+              <PriorityCards id={item.id} name={item.name} />
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </Animated.View>
     </View>
   );
 }
-
-const homestyles = StyleSheet.create({
-  popupItemContainer: {
-    flex: 1,
-    marginTop: 18,
-    marginHorizontal: 5,
-    alignItems: "center",
-  },
-  popupListContainer: {
-    height: 400,
-    marginTop: 360,
-    marginHorizontal: 55,
-    left: 16,
-    zIndex: 21,
-  },
-  popuptextitle: {
-    fontFamily: "P5-Font",
-    fontSize: 11,
-    color: "#fff",
-    textAlign: "center",
-    transform: [{ rotate: "-8deg" }],
-    zIndex: 0,
-    width: 115,
-    top: 25,
-    left: 2,
-  },
-  popupcardnotch: {
-    width: 130,
-    height: 58,
-    top: -12,
-    zIndex: -1,
-  },
-  popupcardpressable: {
-    width: 75,
-    height: 150,
-  },
-  popupcard: {
-    width: 75,
-    height: 150,
-    top: -20,
-    left: 3,
-  },
-  popupview: {
-    position: "absolute",
-    backgroundColor: "transparent",
-    width: "100%",
-    height: "120%",
-    left: 400,
-    top: 20,
-    zIndex: 20,
-  },
-  popup: {
-    position: "absolute",
-    width: 390,
-    height: 390,
-    left: 2,
-    top: 250,
-    zIndex: 20,
-  },
-  popuptext: {
-    fontFamily: "P5-Font",
-    fontSize: 17,
-    zIndex: 25,
-    color: "#fff",
-    position: "absolute",
-    width: 200,
-    height: 45,
-    left: 152,
-    top: 335,
-    textAlign: "center",
-  },
-  popupbackpressable: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    zIndex: 25,
-    transform: [{ rotate: "-3deg" }],
-  },
-  popupback: {
-    position: "absolute",
-    width: 100,
-    height: 70,
-    left: 32,
-    top: 323,
-    zIndex: 25,
-  },
-  isfav: {
-    position: "relative",
-    width: 45,
-    height: 45,
-    bottom: 65,
-    left: -60,
-    zIndex: 9,
-    marginBottom: -48,
-  },
-  hiddenFav: {
-    opacity: 0,
-  },
-  welcome: {
-    fontFamily: "P5-Font",
-    fontSize: 22,
-    color: "#000",
-    textAlign: "center",
-    zIndex: 7,
-    width: 400,
-    top: 55,
-    left: -5,
-  },
-  notecat: {
-    width: 19,
-    height: 19,
-    transform: [{ rotate: "-15deg" }],
-    top: -63,
-    left: -51,
-    zIndex: 4,
-  },
-  textcat: {
-    fontFamily: "P5-Font",
-    fontSize: 7.5,
-    color: "#000",
-    textAlign: "center",
-    transform: [{ rotate: "-9deg" }],
-    zIndex: 6,
-    width: 80,
-    top: -50.3,
-    left: -22.3,
-  },
-  catListContainer: {
-    height: 200,
-    marginTop: 112,
-    marginLeft: -2,
-    zIndex: 8,
-    transform: [{ rotate: "4deg" }],
-  },
-  catItemContainer: {
-    margin: 3,
-    alignItems: "center",
-  },
-  catTextitle: {
-    fontFamily: "P5-Font",
-    fontSize: 13,
-    color: "#000",
-    textAlign: "center",
-    transform: [{ rotate: "-10deg" }],
-    zIndex: 6,
-    width: 80,
-    top: 41.5,
-    left: -3.5,
-  },
-  catNotch: {
-    width: 85,
-    height: 45,
-    top: 9,
-    left: -6,
-    zIndex: 5,
-  },
-  catPressable: {
-    width: 70,
-    height: 70,
-  },
-  cat: {
-    width: 60,
-    height: 60,
-    zIndex: 4,
-  },
-  selectedCat: {
-    top: -30,
-    left: -7,
-    width: 78,
-    height: 78,
-  },
-  selectedCatNotch: {
-    top: -17,
-    width: 100,
-    height: 55,
-  },
-  selectedCatTextitle: {
-    top: 22,
-    fontSize: 16,
-  },
-  listContainer: {
-    flex: 1,
-    marginTop: -45,
-    marginBottom: 0,
-  },
-  itemContainer: {
-    flex: 1,
-    marginTop: 18,
-    alignItems: "center",
-  },
-  row: {
-    flex: 1,
-    justifyContent: "space-around",
-  },
-  textitle: {
-    fontFamily: "P5-Font",
-    fontSize: 14,
-    color: "#fff",
-    textAlign: "center",
-    transform: [{ rotate: "-8deg" }],
-    zIndex: 0,
-    width: 125,
-    top: 46,
-    left: 2,
-  },
-  cardnotch: {
-    width: 170,
-    height: 68,
-    top: 2,
-    zIndex: -1,
-  },
-  cardpressable: {
-    width: 126,
-    height: 240,
-  },
-  card: {
-    width: 126,
-    height: 240,
-    zIndex: 1,
-    top: -29,
-  },
-  newnotepressable: {
-    position: "absolute",
-    left: 0,
-    bottom: 0,
-    zIndex: 3,
-  },
-  newnote: {
-    position: "absolute",
-    width: 125,
-    height: 55,
-    left: 18,
-    bottom: 18,
-    zIndex: 3,
-  },
-  delprofilepressable: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    zIndex: 3,
-  },
-  delprofile: {
-    position: "absolute",
-    width: 80,
-    height: 85,
-    right: 14,
-    top: 45,
-    zIndex: 3,
-  },
-  delcatpressable: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    zIndex: 3,
-  },
-  delcat: {
-    position: "absolute",
-    width: 80,
-    height: 78,
-    right: 158,
-    top: 50,
-    zIndex: 3,
-    opacity: 0.5,
-  },
-  logoutpressable: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    zIndex: 3,
-  },
-  logout: {
-    position: "absolute",
-    width: 80,
-    height: 80,
-    left: 15,
-    top: 50,
-    zIndex: 3,
-  },
-  categoriesstrip: {
-    position: "absolute",
-    width: 400,
-    height: 125,
-    left: 0,
-    top: 140,
-    zIndex: 2,
-  },
-  header: {
-    position: "absolute",
-    width: 400,
-    height: 400,
-    left: 0,
-    top: -12,
-    zIndex: 1,
-  },
-  bg: {
-    position: "absolute",
-    width: 400,
-    height: 830,
-    left: 0,
-    top: 60,
-    zIndex: -2,
-  },
-  blackfade: {
-    position: "absolute",
-    width: 450,
-    height: 900,
-    left: 0,
-    top: 0,
-    zIndex: 9,
-    opacity: 0,
-    backgroundColor: "black",
-  },
-});
