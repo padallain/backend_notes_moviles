@@ -24,9 +24,10 @@ const noteSchema = new Schema(
       default: 'General',                    // Default category if none provided
     },
     priority: {
-      type: String,
-      enum: ['Low', 'Medium', 'High'],       // Priority can be one of these values
-      default: 'Low',
+      type: Number,
+        min: 1,
+        max: 20,
+        default: 1,  
     },
     favorite: {
       type: Boolean,
