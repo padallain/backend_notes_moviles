@@ -235,7 +235,9 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(calledCategory);
   const [filteredCards, setFilteredCards] = useState([]);
   const [cards, setCards] = useState([]);
+  const [noNotes, setNoNotes] = useState(false);
   const [pointerEventsEnabled, setPointerEventsEnabled] = useState(false);
+  const [selectedOriginalIndex, setSelectedOriginalIndex] = useState("");
   const opacity = useSharedValue(0);
 
   const PopupEnter = useAnimatedStyle(() => {
@@ -502,6 +504,7 @@ export default function Home() {
           }
 
           setCards(formattedCards);
+          setNoNotes(formattedCards.length === 0);
         } catch (error) {
           console.error("Error fetching notes:", error);
         }
@@ -662,7 +665,7 @@ export default function Home() {
             params: { personId },
           });
         }, 150);
-      }, 200);
+      }, 250);
     } catch (error) {
       console.error("Error creating note:", error);
     }
@@ -704,9 +707,60 @@ export default function Home() {
     fadeopacity.value = withTiming(0.75, { duration: 1000 }, () => {
       fadeopacity.value = 0.75;
     });
+    setSelectedOriginalIndex(originalIndex);
   };
 
-  const handleNewPrioritySelect = async (id) => {};
+  const handleNewPrioritySelect = async (id) => {
+    console.log("New Card Selected");
+    await playSound(require("../assets/images/SFX/Select.wav"));
+    setPointerEventsEnabled(false);
+
+    try {
+      const response = await fetch(
+        `https://backend-notes-moviles.onrender.com/updateNote/${selectedOriginalIndex}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            priority: id,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Note updated successfully:", data);
+
+      popupenter2.value = withTiming(
+        100,
+        { duration: 500, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
+        () => {
+          popupenter2.value = 0;
+        }
+      );
+
+      fadeopacity.value = withTiming(1, { duration: 500 }, () => {
+        fadeopacity.value = 1;
+      });
+
+      setTimeout(() => {
+        router.navigate("/reload");
+        setTimeout(() => {
+          router.navigate({
+            pathname: "/home",
+            params: { personId },
+          });
+        }, 150);
+      }, 250);
+    } catch (error) {
+      console.error("Error updating note:", error);
+    }
+  };
 
   const handlePopupBackPress2 = async () => {
     console.log("Priority Popup Back Pressed");
@@ -742,6 +796,22 @@ export default function Home() {
         source={require("../assets/images/Home/Header.png")}
         style={homestyles.header}
       />
+      {selectedCategory === 11 && noNotes && (
+        <View style={homestyles.welcomeContainer} pointerEvents="none">
+          <Text style={homestyles.welcome}>Welcome!</Text>
+          <Text style={homestyles.nonotes}>
+            Ready to create your first note?
+          </Text>
+          <Text style={homestyles.nonotes2}>
+            Just select one of the 10 categories from the list above and press
+            this button!
+          </Text>
+          <Image
+            style={homestyles.nonotes3}
+            source={require("../assets/images/Home/NewNote.png")}
+          />
+        </View>
+      )}
       <Image
         source={require("../assets/images/Home/CategoriesHD.png")}
         style={homestyles.categoriesstrip}

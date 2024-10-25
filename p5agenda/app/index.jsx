@@ -432,13 +432,6 @@ export default function Index() {
     console.log("Login button pressed");
     await playSound(require("../assets/images/SFX/Calendar Knife.wav"));
 
-    // fadeopacity.value = withTiming(1, { duration: 500 }, () => {
-    //   fadeopacity.value = 1;
-    // });
-    // setTimeout(() => {
-    //   router.push("/home");
-    // }, 500);
-
     const loginData = {
       username: username,
       password: password,
