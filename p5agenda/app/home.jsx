@@ -480,7 +480,7 @@ export default function Home() {
       description: "",
       user: personId, // Replace with the actual user ID
       category: selectedCategory, // Replace with the actual category ID
-      priority: "High",
+      priority: 1,
       favorite: false,
       card: id,
     };
