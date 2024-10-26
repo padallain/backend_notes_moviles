@@ -94,22 +94,22 @@ export default function Index() {
       true
     );
 
-    // loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
-    // loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
-    // setTimeout(() => {
-    //   (async () => {
-    //     const sound = await playSound(
-    //       require("../assets/images/SFX/Music.mp3"),
-    //       {
-    //         shouldPlay: true,
-    //         isLooping: true,
-    //         volume: 0.4,
-    //       }
-    //     );
-    //     setSound(sound);
-    //   })();
-    //   setPressableDisabled(false);
-    // }, delay3);
+    loadopacity.value = withDelay(delay3, withTiming(0, { duration: 800 }));
+    loadopacity2.value = withDelay(delay1, withTiming(1, { duration: 800 }));
+    setTimeout(() => {
+      (async () => {
+        const sound = await playSound(
+          require("../assets/images/SFX/Music.mp3"),
+          {
+            shouldPlay: true,
+            isLooping: true,
+            volume: 0.4,
+          }
+        );
+        setSound(sound);
+      })();
+      setPressableDisabled(false);
+    }, delay3);
 
     return () => {
       keyboardDidShowListener.remove();
@@ -303,10 +303,10 @@ export default function Index() {
   };
 
   const handlePress = async () => {
-    // await playSound(require("../assets/images/SFX/Start.wav"));
-    // setTimeout(async () => {
-    //   await playSound(require("../assets/images/SFX/Start Alright.wav"));
-    // }, 200);
+    await playSound(require("../assets/images/SFX/Start.wav"));
+    setTimeout(async () => {
+      await playSound(require("../assets/images/SFX/Start Alright.wav"));
+    }, 200);
     console.log("Tap To Begin Pressed");
     setPressableDisabled(true);
     setIsRegisterPressableActive(true);
@@ -531,6 +531,12 @@ export default function Index() {
           duration: 1300,
           easing: Easing.bezier(0.25, -0.25, 0.25, 1),
         });
+
+        setIsLoginBack1PressableActive(false);
+        setIsRegisterButtonPressableActive(false);
+        setIsRegisterPressableActive(true);
+        setIsForgotPassPressableActive(true);
+        setIsLoginButtonPressableActive(true);
       } else {
         let errorMessage;
 
