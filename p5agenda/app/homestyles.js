@@ -240,6 +240,18 @@ const homestyles = StyleSheet.create({
     left: 118,
     top: 630,
   },
+  nonotes4: {
+    fontFamily: "P5-Font",
+    position: "absolute",
+    fontSize: 13,
+    color: "#dcdcdc",
+    textAlign: "center",
+    zIndex: 7,
+    width: 350,
+    top: 710,
+    left: 17.5,
+    textDecorationLine: "underline",
+  },
   notecat: {
     width: 19,
     height: 19,

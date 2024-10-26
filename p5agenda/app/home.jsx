@@ -516,7 +516,7 @@ export default function Home() {
         fadeopacity.value = withTiming(0, { duration: 500 }, () => {
           fadeopacity.value = 0;
         });
-      }, 500);
+      }, 550);
       animateCards();
     }, [personId, selectedCategory])
   );
@@ -803,13 +803,16 @@ export default function Home() {
             Ready to create your first note?
           </Text>
           <Text style={homestyles.nonotes2}>
-            Just select one of the 10 categories from the list above and press
-            this button!
+            Just select one of the 10 categories above and press this button on
+            the bottom left!
           </Text>
           <Image
             style={homestyles.nonotes3}
             source={require("../assets/images/Home/NewNote.png")}
           />
+          <Text style={homestyles.nonotes4}>
+            (This placeholder doesn't count.)
+          </Text>
         </View>
       )}
       <Image
