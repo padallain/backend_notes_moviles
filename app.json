@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "dccd46e0-e2f2-4632-bfe5-7b50e0e7d60e"
+      }
+    },
+    "android": {
+      "package": "com.p5agenda"
+    }
+  }
+}
