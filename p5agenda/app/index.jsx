@@ -502,6 +502,11 @@ export default function Index() {
           body: JSON.stringify(dataRegister),
         }
       );
+      
+      if(username.length < 4){
+        showToast("Username must be at least 4 characters long");
+        return;
+      }
 
       const data = await response.json();
       console.log(data);
@@ -1059,6 +1064,7 @@ export default function Index() {
               value={username}
               onChangeText={(text) => setUsername(text.toLowerCase())} // Convierte a minúsculas
               style={styles.input2}
+              maxLength={10}
             />
           </Animated.View>
 
