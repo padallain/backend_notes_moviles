@@ -38,7 +38,7 @@ export default function Index() {
   const sv1 = useSharedValue(0);
   const sv2 = useSharedValue(0);
   const keyboardmove = useSharedValue(0);
-  const loadopacity = useSharedValue(0);
+  const loadopacity = useSharedValue(1);
   const loadopacity2 = useSharedValue(0);
   const opacity = useSharedValue(1);
   const fadeopacity = useSharedValue(0);
@@ -248,7 +248,7 @@ export default function Index() {
 
   const [isSound, setSound] = useState(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const [pressableDisabled, setPressableDisabled] = useState(false);
+  const [pressableDisabled, setPressableDisabled] = useState(true);
   const [isRegisterPressableActive, setIsRegisterPressableActive] =
     useState(false);
   const [isForgotPassPressableActive, setIsForgotPassPressableActive] =
@@ -303,15 +303,15 @@ export default function Index() {
   };
 
   const handlePress = async () => {
+    setPressableDisabled(true);
+    setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
     await playSound(require("../assets/images/SFX/Start.wav"));
     setTimeout(async () => {
       await playSound(require("../assets/images/SFX/Start Alright.wav"));
     }, 200);
     console.log("Tap To Begin Pressed");
-    setPressableDisabled(true);
-    setIsRegisterPressableActive(true);
-    setIsForgotPassPressableActive(true);
-    setIsLoginButtonPressableActive(true);
     opacity.value = withTiming(0, { duration: 500 });
     scaleLogo.value = withTiming(0.5, {
       duration: 1000,
@@ -352,13 +352,13 @@ export default function Index() {
   };
 
   const handleRegisterPress = async () => {
-    console.log("Register button pressed");
-    await playSound(require("../assets/images/SFX/Select.wav"));
     setIsRegisterPressableActive(false);
     setIsForgotPassPressableActive(false);
     setIsLoginButtonPressableActive(false);
     setIsLoginBack1PressableActive(true);
     setIsRegisterButtonPressableActive(true);
+    console.log("Register button pressed");
+    await playSound(require("../assets/images/SFX/Select.wav"));
     setUsername(""); // Resetea los inputs
     setEmail(""); // Borra el email
     setPassword(""); // Borra el password
@@ -389,14 +389,15 @@ export default function Index() {
   };
 
   const handleForgotPassPress = async () => {
-    console.log("Forgot Password button pressed");
-    setEmail(""); // Borra el email
-    await playSound(require("../assets/images/SFX/Select.wav"));
     setIsRegisterPressableActive(false);
     setIsForgotPassPressableActive(false);
     setIsLoginButtonPressableActive(false);
     setIsLoginBack2PressableActive(true);
     setIsSendPressableActive(true);
+    console.log("Forgot Password button pressed");
+    setEmail(""); // Borra el email
+    await playSound(require("../assets/images/SFX/Select.wav"));
+
     loginbook2.value = withTiming(
       0,
       { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
@@ -507,6 +508,11 @@ export default function Index() {
       console.log(data);
 
       if (response.ok) {
+        setIsLoginBack1PressableActive(false);
+        setIsRegisterButtonPressableActive(false);
+        setIsRegisterPressableActive(true);
+        setIsForgotPassPressableActive(true);
+        setIsLoginButtonPressableActive(true);
         showToast("User registered successfully");
         console.log("User registered successfully", data);
         loginbook2.value = withTiming(
@@ -531,12 +537,6 @@ export default function Index() {
           duration: 1300,
           easing: Easing.bezier(0.25, -0.25, 0.25, 1),
         });
-
-        setIsLoginBack1PressableActive(false);
-        setIsRegisterButtonPressableActive(false);
-        setIsRegisterPressableActive(true);
-        setIsForgotPassPressableActive(true);
-        setIsLoginButtonPressableActive(true);
       } else {
         let errorMessage;
 
@@ -575,13 +575,13 @@ export default function Index() {
   };
 
   const handleSendButtonPress = async () => {
+    setIsSendPressableActive(false);
+    setIsVerifyPressableActive(true);
     setSecretCode("");
     setNewPassword("");
     setConfirmNewPassword("");
     console.log("Send button pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
-    setIsSendPressableActive(false);
-    setIsVerifyPressableActive(true);
 
     const dataRecover = {
       email_user: email, // El valor capturado del input de email
@@ -623,10 +623,10 @@ export default function Index() {
   };
 
   const handleVerifyButtonPress = async () => {
-    console.log("Verify button pressed");
-    await playSound(require("../assets/images/SFX/Select.wav"));
     setIsVerifyPressableActive(false);
     setIsConfirmPressableActive(true);
+    console.log("Verify button pressed");
+    await playSound(require("../assets/images/SFX/Select.wav"));
 
     // Verifica que el resetCode tenga 6 caracteres
     if (secretCode.length !== 6) {
@@ -709,14 +709,15 @@ export default function Index() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const responseData = await response.json();
-      console.log("Password confirmed successfully:", responseData);
-      showToast("Password confirmed successfully");
       setIsLoginBack2PressableActive(false);
       setIsSendPressableActive(false);
       setIsRegisterPressableActive(true);
       setIsForgotPassPressableActive(true);
       setIsLoginButtonPressableActive(true);
+
+      const responseData = await response.json();
+      console.log("Password confirmed successfully:", responseData);
+      showToast("Password confirmed successfully");
       loginbook2.value = withTiming(-400, {
         duration: 1200,
         easing: Easing.bezier(0.5, -0.5, 0.25, 1),
@@ -767,6 +768,11 @@ export default function Index() {
   };
 
   const BackToLogin1ButtonPress = async () => {
+    setIsLoginBack1PressableActive(false);
+    setIsRegisterButtonPressableActive(false);
+    setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
     console.log("Back To Login button pressed");
     setEmail(""); // Borra el email
     setPassword(""); // Borra el password
@@ -774,11 +780,6 @@ export default function Index() {
     setNewPassword("");
     setConfirmNewPassword("");
     await playSound(require("../assets/images/SFX/Back.wav"));
-    setIsLoginBack1PressableActive(false);
-    setIsRegisterButtonPressableActive(false);
-    setIsRegisterPressableActive(true);
-    setIsForgotPassPressableActive(true);
-    setIsLoginButtonPressableActive(true);
     loginbook2.value = withTiming(
       -400,
       { duration: 1200, easing: Easing.bezier(0.5, -0.5, 0.25, 1) },
@@ -804,6 +805,11 @@ export default function Index() {
   };
 
   const BackToLogin2ButtonPress = async () => {
+    setIsLoginBack2PressableActive(false);
+    setIsSendPressableActive(false);
+    setIsRegisterPressableActive(true);
+    setIsForgotPassPressableActive(true);
+    setIsLoginButtonPressableActive(true);
     setEmail(""); // Borra el email
     setPassword(""); // Borra el password
     setSecretCode("");
@@ -811,11 +817,7 @@ export default function Index() {
     setConfirmNewPassword("");
     console.log("Back To Login button pressed");
     await playSound(require("../assets/images/SFX/Back.wav"));
-    setIsLoginBack2PressableActive(false);
-    setIsSendPressableActive(false);
-    setIsRegisterPressableActive(true);
-    setIsForgotPassPressableActive(true);
-    setIsLoginButtonPressableActive(true);
+
     loginbook2.value = withTiming(-400, {
       duration: 1200,
       easing: Easing.bezier(0.5, -0.5, 0.25, 1),
