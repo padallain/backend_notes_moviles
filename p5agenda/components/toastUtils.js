@@ -13,7 +13,7 @@ export const showToast = (message) => {
   // Hide the toast after a delay
   setTimeout(() => {
     Toast.hide(toast);
-  }, 6000);
+  }, 8000);
 
   return toast;
 };
