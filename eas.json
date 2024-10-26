@@ -20,6 +20,13 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "env": {
+        "PORT": "8000",
+        "DB_URI": "mongodb+srv://padallain2000:7gnah-y.5ZPpAG.@notescluster.t4h3p.mongodb.net/notesDB?retryWrites=true&w=majority&appName=notesCluster",
+        "SECRET_KEY": "7gnah-y.5ZPpAG.",
+        "NODE_ENV": "development"
+      }
+    }
   }
 }
