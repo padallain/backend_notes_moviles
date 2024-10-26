@@ -423,9 +423,9 @@ export default function Home() {
   };
 
   const handleCategoryPress = async (id) => {
+    setSelectedCategory(id);
     console.log("Category Pressed: " + id);
     await playSound(require("../assets/images/SFX/Category Select.wav"));
-    setSelectedCategory(id);
 
     if (id === 11) {
       setFilteredCards(cards);
@@ -590,8 +590,8 @@ export default function Home() {
   };
 
   const handleNewNotePress = async () => {
-    console.log("New Note Button Pressed");
     setPointerEventsEnabled(true);
+    console.log("New Note Button Pressed");
     await playSound(require("../assets/images/SFX/Select.wav"));
     popupenter.value = withTiming(
       -400,
