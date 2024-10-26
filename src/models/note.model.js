@@ -21,7 +21,7 @@ const noteSchema = new Schema(
     category: {
       type: String,
       trim: true,
-      default: 'General',                    // Default category if none provided
+      default: '0',                    // Default category if none provided
     },
     priority: {
       type: Number,
