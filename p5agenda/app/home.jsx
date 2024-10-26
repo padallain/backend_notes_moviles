@@ -513,7 +513,7 @@ export default function Home() {
       fetchNotes();
 
       setTimeout(() => {
-        fadeopacity.value = withTiming(0, { duration: 400 }, () => {
+        fadeopacity.value = withTiming(0, { duration: 500 }, () => {
           fadeopacity.value = 0;
         });
       }, 500);
@@ -664,8 +664,8 @@ export default function Home() {
             pathname: "/home",
             params: { personId },
           });
-        }, 150);
-      }, 250);
+        }, 250);
+      }, 150);
     } catch (error) {
       console.error("Error creating note:", error);
     }

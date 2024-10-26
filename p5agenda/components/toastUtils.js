@@ -1,4 +1,4 @@
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast";
 
 export const showToast = (message) => {
   const toast = Toast.show(message, {
@@ -13,7 +13,7 @@ export const showToast = (message) => {
   // Hide the toast after a delay
   setTimeout(() => {
     Toast.hide(toast);
-  }, 4000);
+  }, 8000);
 
   return toast;
 };
